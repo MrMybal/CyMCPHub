@@ -4,7 +4,7 @@ title: Background service and data
 description: Keep the Hub available and locate its local annotations and Skills.
 section: Using CyMCPHub
 order: 3
-revision: 1
+revision: 2
 parent: welcome
 ---
 
@@ -21,3 +21,7 @@ When the tray icon is available, closing the main window keeps the Hub running. 
 | macOS | `~/Library/Application Support/CyMCPHub` |
 
 The desktop window and stdio server share annotations and Skills in this directory. Set `CYMCP_HUB_DATA` to use another folder. The journal is kept in memory for the current process.
+
+## Application licence {#license}
+
+CyMCPHub is distributed under the GNU General Public License, version 3 only (`GPL-3.0-only`). The `LICENSE` file at the root of each package contains the terms. The package also includes the individual notices for its dependencies.

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Cyberalien
+// SPDX-License-Identifier: GPL-3.0-only
+
 #include "platform.hpp"
 
 #include <ctime>

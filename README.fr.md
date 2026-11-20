@@ -9,6 +9,7 @@
     </td>
     <td width="400" align="center" valign="middle"></td>
     <td width="300" align="right" valign="top">
+      <p><sub>Licence de l’application</sub><br><a href="LICENSE"><strong>GPL-3.0-only</strong></a></p>
       <p><sub>Version</sub><br><a href="VERSION.fr.md"><strong>0.3.0</strong></a></p>
       <p><strong>Windows x64 · Linux x64</strong><br><sub>Cible de compilation macOS</sub></p>
     </td>
@@ -17,7 +18,7 @@
 
 <h1 align="center">CyMCPHub</h1>
 
-Un explorateur de bureau pour les serveurs Model Context Protocol locaux, les SDK et les outils IA en ligne de commande. Le Hub retrouve les connexions et partage un catalogue d’outils consultable par un autre client IA.
+Un explorateur de bureau pour les serveurs MCP locaux, les SDK et les CLI d’IA, avec un catalogue d’outils consultable et un assistant contextuel. Le Hub retrouve les connexions et partage le catalogue avec un autre client IA.
 
 Les [notes de version](VERSION.fr.md) décrivent les plateformes et les limites actuelles.
 
@@ -56,7 +57,11 @@ Voir les [commandes de compilation et de paquetage en local](BUILD.md). La chaî
 
 ---
 
-## Licences des dépendances
+## Licence
+
+CyMCPHub est distribué sous la [licence publique générale GNU, version 3 uniquement](LICENSE) (`GPL-3.0-only`).
+
+### Licences des dépendances
 
 Les paquets natifs contiennent les notices de leurs composants.
 

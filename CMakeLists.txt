@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Cyberalien
+# SPDX-License-Identifier: GPL-3.0-only
+
 cmake_minimum_required(VERSION 3.24)
 project(CyMCPHub VERSION 0.3.0 LANGUAGES CXX)
 
@@ -135,7 +138,7 @@ else()
     install(TARGETS CyMCPHubMcp RUNTIME DESTINATION . COMPONENT Hub)
     install(DIRECTORY "$<TARGET_FILE_DIR:CyMCPHub>/licenses" DESTINATION . COMPONENT Hub)
 endif()
-install(FILES README.md README.fr.md BUILD.md VERSION.md VERSION.fr.md DESTINATION . COMPONENT Hub)
+install(FILES LICENSE README.md README.fr.md BUILD.md VERSION.md VERSION.fr.md DESTINATION . COMPONENT Hub)
 install(DIRECTORY Documentation DESTINATION . COMPONENT Hub)
 
 include(CTest)

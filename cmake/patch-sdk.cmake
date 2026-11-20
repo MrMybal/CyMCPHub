@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Cyberalien
+# SPDX-License-Identifier: GPL-3.0-only
+
 set(patch "${CMAKE_CURRENT_LIST_DIR}/CyMCPSDK-streamable-http.patch")
 execute_process(COMMAND "${GIT}" -C "${SDK_SOURCE}" apply --reverse --check --ignore-whitespace "${patch}"
     RESULT_VARIABLE already_applied OUTPUT_QUIET ERROR_QUIET)

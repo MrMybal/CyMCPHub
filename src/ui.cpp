@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Cyberalien
+// SPDX-License-Identifier: GPL-3.0-only
+
 #include "ui.hpp"
 #include "action_panel.hpp"
 #include "assistant_panel.hpp"

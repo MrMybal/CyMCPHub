@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Cyberalien
+# SPDX-License-Identifier: GPL-3.0-only
+
 """Regression checks for the HTTP exchanges observed on CyAICodex and RealityAssistant.
 
 Run with: python tests/http_compatibility.py path/to/CyMCPHubMcp

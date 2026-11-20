@@ -9,6 +9,7 @@
     </td>
     <td width="400" align="center" valign="middle"></td>
     <td width="300" align="right" valign="top">
+      <p><sub>Application licence</sub><br><a href="LICENSE"><strong>GPL-3.0-only</strong></a></p>
       <p><sub>Version</sub><br><a href="VERSION.md"><strong>0.3.0</strong></a></p>
       <p><strong>Windows x64 · Linux x64</strong><br><sub>macOS build target</sub></p>
     </td>
@@ -17,7 +18,7 @@
 
 <h1 align="center">CyMCPHub</h1>
 
-A desktop explorer for local Model Context Protocol servers, SDKs and AI command-line tools. Use the Hub to find connections and share a searchable tool catalogue with another AI client.
+A desktop explorer for local MCP servers, SDKs and AI CLIs, with a searchable tool catalogue and contextual assistant. Use the Hub to find connections and share the catalogue with another AI client.
 
 Read the [version notes](VERSION.md) for platform coverage and current limits.
 
@@ -56,7 +57,11 @@ See the [local build and packaging commands](BUILD.md). The toolchain uses CMake
 
 ---
 
-## Dependency licences
+## Licence
+
+CyMCPHub is licensed under the [GNU General Public License, version 3 only](LICENSE) (`GPL-3.0-only`).
+
+### Dependency licences
 
 The native packages include the notices for their bundled components.
 

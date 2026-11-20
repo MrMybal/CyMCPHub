@@ -4,8 +4,8 @@ title: Arrière-plan et données
 description: Garder le Hub accessible et retrouver les annotations et Skills.
 section: Utiliser CyMCPHub
 order: 3
-revision: 1
-sourceRevision: 1
+revision: 2
+sourceRevision: 2
 parent: welcome
 ---
 
@@ -22,3 +22,7 @@ Quand l’icône de la zone de notification est disponible, fermer la fenêtre p
 | macOS | `~/Library/Application Support/CyMCPHub` |
 
 La fenêtre et le serveur stdio partagent les annotations et les Skills de ce dossier. Définissez `CYMCP_HUB_DATA` pour utiliser un autre dossier. Le journal est conservé en mémoire pour le processus courant.
+
+## Licence de l’application {#license}
+
+CyMCPHub est distribué sous la licence publique générale GNU, version 3 uniquement (`GPL-3.0-only`). Le fichier `LICENSE` à la racine de chaque paquet contient le texte de la licence. Le paquet contient aussi les notices des dépendances.
