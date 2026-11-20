@@ -1,0 +1,15 @@
+{
+  "name": "cymcphub-documentation",
+  "private": true,
+  "version": "0.3.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "cydoc build cydoc.config.json && node check.mjs",
+    "check": "cydoc check cydoc.config.json && node check.mjs"
+  },
+  "devDependencies": {
+    "cydoc": "file:vendor/cydoc-0.1.0-6ddf9a5.tgz"
+  }
+}

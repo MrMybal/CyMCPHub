@@ -1,0 +1,11 @@
+/.deps/
+/build/
+/out/
+/.vs/
+/.CyDocBuild/node_modules/
+/.CyDocBuild/.generated/
+/.CyDocBuild/internal/
+__pycache__/
+*.pyc
+.env
+.env.*

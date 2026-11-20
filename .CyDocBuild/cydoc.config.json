@@ -1,0 +1,22 @@
+{
+  "name": "CyMCPHub",
+  "version": "0.3.0",
+  "defaultLocale": "en",
+  "locales": [
+    {
+      "code": "en",
+      "label": "English"
+    },
+    {
+      "code": "fr",
+      "label": "Français"
+    }
+  ],
+  "homePage": "welcome",
+  "content": "manual",
+  "assets": "assets",
+  "out": "../Documentation",
+  "modules": [
+    "image"
+  ]
+}

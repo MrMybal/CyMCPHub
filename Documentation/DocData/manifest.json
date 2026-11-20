@@ -1,0 +1,350 @@
+{
+  "schemaVersion": 1,
+  "name": "CyMCPHub",
+  "version": "0.3.0",
+  "defaultLocale": "en",
+  "locales": [
+    {
+      "code": "en",
+      "label": "English"
+    },
+    {
+      "code": "fr",
+      "label": "Français"
+    }
+  ],
+  "aliases": {},
+  "pages": [
+    {
+      "id": "assistant",
+      "title": "Assistant and Skills",
+      "description": "Open the separate chat window and collect or author reusable Skills.",
+      "section": "Using CyMCPHub",
+      "order": 2,
+      "revision": "1",
+      "parent": "welcome",
+      "locale": "en",
+      "html": "<h2 id=\"chat\">Work with the current tab<a class=\"heading-anchor\" href=\"#/en/assistant/chat\" aria-label=\"Link to Work with the current tab\">#</a></h2><p><strong>Assistant</strong> opens a second window. Select and connect an available provider such as the Codex CLI. The chat receives the Hub&#39;s active tab and selection. Use <strong>Open in assistant</strong> from a connector to give the chat access to that connector&#39;s tools. Ask the assistant to inspect an action before running it.</p>\n<figure data-cydoc-module=\"image\" data-cydoc-id=\"chat-window\" data-config=\"{&quot;id&quot;:&quot;chat-window&quot;,&quot;src&quot;:&quot;assets/images/hub-assistant.png&quot;,&quot;alt&quot;:&quot;Separate CyMCPHub assistant window showing the active MCP servers tab.&quot;,&quot;title&quot;:&quot;Assistant window with the current Hub tab&quot;,&quot;controls&quot;:&quot;minimal&quot;}\"><img src=\"assets/images/hub-assistant.png\" alt=\"Separate CyMCPHub assistant window showing the active MCP servers tab.\" loading=\"lazy\" decoding=\"async\"></figure><h2 id=\"skills\">Collect or write a Skill<a class=\"heading-anchor\" href=\"#/en/assistant/skills\" aria-label=\"Link to Collect or write a Skill\">#</a></h2><p>In a software scan, check the discovered <code>SKILL.md</code> files. From a connector&#39;s <strong>Skills</strong> tab, collect Markdown exposed as a resource or through <code>search_skills</code> and <code>get_skill</code>. The <strong>Skills</strong> library lets you open and copy collected documents.</p>\n<p>Use <strong>Create with assistant</strong> to prepare a request for a new Skill for the selected connector. Ask the assistant to review the tool descriptions and save a Markdown document with YAML <code>name</code> and <code>description</code> fields. Review the saved text before using it in another client.</p>\n",
+      "text": "Work with the current tab # Assistant opens a second window. Select and connect an available provider such as the Codex CLI. The chat receives the Hub's active tab and selection. Use Open in assistant from a connector to give the chat access to that connector's tools. Ask the assistant to inspect an action before running it. Collect or write a Skill # In a software scan, check the discovered SKILL.md files. From a connector's Skills tab, collect Markdown exposed as a resource or through search_skills and get_skill . The Skills library lets you open and copy collected documents. Use Create with assistant to prepare a request for a new Skill for the selected connector. Ask the assistant to review the tool descriptions and save a Markdown document with YAML name and description fields. Review the saved text before using it in another client.",
+      "headings": [
+        {
+          "id": "chat",
+          "text": "Work with the current tab",
+          "level": 2
+        },
+        {
+          "id": "skills",
+          "text": "Collect or write a Skill",
+          "level": 2
+        }
+      ],
+      "anchors": [],
+      "languages": [],
+      "code": "",
+      "assets": [
+        "assets/images/hub-assistant.png"
+      ],
+      "links": [],
+      "kind": "media"
+    },
+    {
+      "id": "desktop",
+      "title": "Background service and data",
+      "description": "Keep the Hub available and locate its local annotations and Skills.",
+      "section": "Using CyMCPHub",
+      "order": 3,
+      "revision": "1",
+      "parent": "welcome",
+      "locale": "en",
+      "html": "<h2 id=\"background\">Keep the Hub available<a class=\"heading-anchor\" href=\"#/en/desktop/background\" aria-label=\"Link to Keep the Hub available\">#</a></h2><p>When the tray icon is available, closing the main window keeps the Hub running. The tray menu reopens the main or assistant window, enables startup at sign-in and quits the app. <code>--tray</code> starts with the main window hidden. Ubuntu desktops need an AppIndicator host and <code>libayatana-appindicator3-1</code> to show the icon.</p>\n<h2 id=\"data\">Find the data folder<a class=\"heading-anchor\" href=\"#/en/desktop/data\" aria-label=\"Link to Find the data folder\">#</a></h2><table>\n<thead>\n<tr>\n<th>Platform</th>\n<th>Default</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>Windows</td>\n<td><code>%LOCALAPPDATA%\\CyMCPHub</code></td>\n</tr>\n<tr>\n<td>Linux</td>\n<td><code>$XDG_DATA_HOME/cymcphub</code> or <code>~/.local/share/cymcphub</code></td>\n</tr>\n<tr>\n<td>macOS</td>\n<td><code>~/Library/Application Support/CyMCPHub</code></td>\n</tr>\n</tbody></table>\n<p>The desktop window and stdio server share annotations and Skills in this directory. Set <code>CYMCP_HUB_DATA</code> to use another folder. The journal is kept in memory for the current process.</p>\n",
+      "text": "Keep the Hub available # When the tray icon is available, closing the main window keeps the Hub running. The tray menu reopens the main or assistant window, enables startup at sign-in and quits the app. --tray starts with the main window hidden. Ubuntu desktops need an AppIndicator host and libayatana-appindicator3-1 to show the icon. Find the data folder # Platform Default Windows %LOCALAPPDATA%\\CyMCPHub Linux $XDG_DATA_HOME/cymcphub or ~/.local/share/cymcphub macOS ~/Library/Application Support/CyMCPHub The desktop window and stdio server share annotations and Skills in this directory. Set CYMCP_HUB_DATA to use another folder. The journal is kept in memory for the current process.",
+      "headings": [
+        {
+          "id": "background",
+          "text": "Keep the Hub available",
+          "level": 2
+        },
+        {
+          "id": "data",
+          "text": "Find the data folder",
+          "level": 2
+        }
+      ],
+      "anchors": [],
+      "languages": [],
+      "code": "",
+      "assets": [],
+      "links": [],
+      "kind": "guide"
+    },
+    {
+      "id": "inventory",
+      "title": "Explore the inventory",
+      "description": "Find local MCP connectors, inspect their tools and scan installed software.",
+      "section": "Using CyMCPHub",
+      "order": 1,
+      "revision": "1",
+      "parent": "welcome",
+      "locale": "en",
+      "html": "<h2 id=\"connectors\">Servers and connectors<a class=\"heading-anchor\" href=\"#/en/inventory/connectors\" aria-label=\"Link to Servers and connectors\">#</a></h2><p><strong>MCP servers</strong> groups connectors that share a name. Each source, transport and annotation stays attached to its own connector. Use the search and active-groups filter to narrow the list.</p>\n<p><strong>Verified MCP</strong> means a local HTTP endpoint answered MCP initialization. TCP discovery checks <code>/mcp</code> on local loopback listeners. A configured local HTTP path can also be verified. <strong>Process observed</strong> means the command of a configured stdio connector matches a readable local process. Authentication and process visibility can affect these results.</p>\n<p>The Hub reads common settings for Codex, Claude Desktop, Claude Code, VS Code, Cursor, Gemini CLI, Windsurf and OpenCode. Connection details mask values of configured credentials. Resolve them locally through their source config.</p>\n<h2 id=\"actions\">Call tools and read resources<a class=\"heading-anchor\" href=\"#/en/inventory/actions\" aria-label=\"Link to Call tools and read resources\">#</a></h2><p>Open <strong>Tools</strong>, load the selected connector&#39;s list and choose an action. Review its input schema, enter JSON arguments and run it. Use <strong>Resources</strong> to list and read URIs. A stdio connection launches a dedicated process. <strong>Disconnect</strong> closes the selected session. The <strong>Journal</strong> reports operations, HTTP statuses and assistant diagnostics. Copy it as JSON Lines when you need to share a diagnostic.</p>\n<h2 id=\"software\">Search SDKs and CLIs<a class=\"heading-anchor\" href=\"#/en/inventory/software\" aria-label=\"Link to Search SDKs and CLIs\">#</a></h2><p>In <strong>SDK</strong> or <strong>CLI</strong>, choose a file or folder. The Hub looks for CyMCPSDK build references, library names, binary markers and known CLI names. It reads files without launching them. The CLI inventory can include executables detected on the <code>PATH</code>. Each result shows its path and the evidence for the detection.</p>\n",
+      "text": "Servers and connectors # MCP servers groups connectors that share a name. Each source, transport and annotation stays attached to its own connector. Use the search and active-groups filter to narrow the list. Verified MCP means a local HTTP endpoint answered MCP initialization. TCP discovery checks /mcp on local loopback listeners. A configured local HTTP path can also be verified. Process observed means the command of a configured stdio connector matches a readable local process. Authentication and process visibility can affect these results. The Hub reads common settings for Codex, Claude Desktop, Claude Code, VS Code, Cursor, Gemini CLI, Windsurf and OpenCode. Connection details mask values of configured credentials. Resolve them locally through their source config. Call tools and read resources # Open Tools , load the selected connector's list and choose an action. Review its input schema, enter JSON arguments and run it. Use Resources to list and read URIs. A stdio connection launches a dedicated process. Disconnect closes the selected session. The Journal reports operations, HTTP statuses and assistant diagnostics. Copy it as JSON Lines when you need to share a diagnostic. Search SDKs and CLIs # In SDK or CLI , choose a file or folder. The Hub looks for CyMCPSDK build references, library names, binary markers and known CLI names. It reads files without launching them. The CLI inventory can include executables detected on the PATH . Each result shows its path and the evidence for the detection.",
+      "headings": [
+        {
+          "id": "connectors",
+          "text": "Servers and connectors",
+          "level": 2
+        },
+        {
+          "id": "actions",
+          "text": "Call tools and read resources",
+          "level": 2
+        },
+        {
+          "id": "software",
+          "text": "Search SDKs and CLIs",
+          "level": 2
+        }
+      ],
+      "anchors": [],
+      "languages": [],
+      "code": "",
+      "assets": [],
+      "links": [],
+      "kind": "guide"
+    },
+    {
+      "id": "mcp",
+      "title": "MCP connection and tools",
+      "description": "Connect another AI client over stdio or local Streamable HTTP.",
+      "section": "Using CyMCPHub",
+      "order": 4,
+      "revision": "1",
+      "parent": "welcome",
+      "locale": "en",
+      "html": "<h2 id=\"connect\">Connect an AI client<a class=\"heading-anchor\" href=\"#/en/mcp/connect\" aria-label=\"Link to Connect an AI client\">#</a></h2><p>In <strong>AI setup</strong>, copy the generated <code>mcpServers</code> configuration into your client. In stdio mode, the client starts <code>CyMCPHubMcp</code> as needed. The macOS target places that binary inside <code>CyMCPHub.app/Contents/MacOS/</code>.</p>\n<p>For a background connection, open <strong>AI setup → MCP service (HTTP)</strong>, enable the service and copy its configuration. It listens on <code>http://127.0.0.1:48786/mcp</code>. The copied configuration contains a bearer token. Keep it in the client&#39;s private configuration. The service starts again with the Hub after activation.</p>\n<p>Both executables accept <code>--workspace &lt;directory&gt;</code> and <code>--config &lt;file&gt;</code>. Use <code>--no-port-scan</code> to disable TCP discovery. The server also supports <code>--list</code> to print a JSON snapshot and exit.</p>\n<h2 id=\"tools\">Public tools<a class=\"heading-anchor\" href=\"#/en/mcp/tools\" aria-label=\"Link to Public tools\">#</a></h2><table>\n<thead>\n<tr>\n<th>Tool</th>\n<th>What it does</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>mcp_list</code></td>\n<td>List and filter connectors. Use <code>refresh: true</code> to rescan, and <code>groupKey</code> to identify connectors that share a name.</td>\n</tr>\n<tr>\n<td><code>mcp_catalog</code></td>\n<td>Search applications and tools. Set <code>format: &quot;markdown&quot;</code> to get an overview. Use <code>id</code> or <code>includeStdio</code> to request stdio catalogue access.</td>\n</tr>\n<tr>\n<td><code>mcp_get</code></td>\n<td>Read the source, connection metadata and annotation by connector ID.</td>\n</tr>\n<tr>\n<td><code>mcp_annotate</code></td>\n<td>Replace an annotation. Submit an empty string to clear it.</td>\n</tr>\n<tr>\n<td><code>mcp_tools</code> and <code>mcp_call</code></td>\n<td>Get a connector’s input schemas and run a selected tool with arguments.</td>\n</tr>\n<tr>\n<td><code>mcp_resources</code> and <code>mcp_read_resource</code></td>\n<td>List and read resources on the selected connector.</td>\n</tr>\n<tr>\n<td><code>mcp_disconnect</code></td>\n<td>Close the session established by the Hub.</td>\n</tr>\n<tr>\n<td><code>mcp_journal</code></td>\n<td>Retrieve the current process journal in JSON Lines.</td>\n</tr>\n<tr>\n<td><code>mcp_list_skills</code> and <code>mcp_read_skill</code></td>\n<td>Find and read Skills in the Hub library.</td>\n</tr>\n<tr>\n<td><code>mcp_collect_skills</code> and <code>mcp_import_skill</code></td>\n<td>Collect Skills from a connector or import a file from the workspace.</td>\n</tr>\n<tr>\n<td><code>mcp_save_skill</code></td>\n<td>Validate and save a new Skill for the chosen connector.</td>\n</tr>\n<tr>\n<td><code>sdk_scan</code></td>\n<td>Scan software by a workspace-relative <code>path</code>. Set <code>includePath: false</code> to limit results to that target.</td>\n</tr>\n</tbody></table>\n<p>For a searchable overview, call <code>mcp_catalog</code> with <code>{&quot;query&quot;:&quot;search&quot;,&quot;format&quot;:&quot;markdown&quot;}</code>. Use <code>mcp_tools</code> on the connector ID for the full input schemas.</p>\n",
+      "text": "Connect an AI client # In AI setup , copy the generated mcpServers configuration into your client. In stdio mode, the client starts CyMCPHubMcp as needed. The macOS target places that binary inside CyMCPHub.app/Contents/MacOS/ . For a background connection, open AI setup → MCP service (HTTP) , enable the service and copy its configuration. It listens on http://127.0.0.1:48786/mcp . The copied configuration contains a bearer token. Keep it in the client's private configuration. The service starts again with the Hub after activation. Both executables accept --workspace <directory> and --config <file> . Use --no-port-scan to disable TCP discovery. The server also supports --list to print a JSON snapshot and exit. Public tools # Tool What it does mcp_list List and filter connectors. Use refresh: true to rescan, and groupKey to identify connectors that share a name. mcp_catalog Search applications and tools. Set format: \"markdown\" to get an overview. Use id or includeStdio to request stdio catalogue access. mcp_get Read the source, connection metadata and annotation by connector ID. mcp_annotate Replace an annotation. Submit an empty string to clear it. mcp_tools and mcp_call Get a connector’s input schemas and run a selected tool with arguments. mcp_resources and mcp_read_resource List and read resources on the selected connector. mcp_disconnect Close the session established by the Hub. mcp_journal Retrieve the current process journal in JSON Lines. mcp_list_skills and mcp_read_skill Find and read Skills in the Hub library. mcp_collect_skills and mcp_import_skill Collect Skills from a connector or import a file from the workspace. mcp_save_skill Validate and save a new Skill for the chosen connector. sdk_scan Scan software by a workspace-relative path . Set includePath: false to limit results to that target. For a searchable overview, call mcp_catalog with {\"query\":\"search\",\"format\":\"markdown\"} . Use mcp_tools on the connector ID for the full input schemas.",
+      "headings": [
+        {
+          "id": "connect",
+          "text": "Connect an AI client",
+          "level": 2
+        },
+        {
+          "id": "tools",
+          "text": "Public tools",
+          "level": 2
+        }
+      ],
+      "anchors": [],
+      "languages": [],
+      "code": "",
+      "assets": [],
+      "links": [],
+      "kind": "guide"
+    },
+    {
+      "id": "welcome",
+      "title": "Get started",
+      "description": "Open the desktop app and find your first connector.",
+      "section": "Using CyMCPHub",
+      "order": 0,
+      "revision": "1",
+      "locale": "en",
+      "html": "<h2 id=\"start\">Open the Hub<a class=\"heading-anchor\" href=\"#/en/welcome/start\" aria-label=\"Link to Open the Hub\">#</a></h2><p>On Windows, open <strong>CyMCPHub.exe</strong> and keep <strong>CyMCPHubMcp.exe</strong> next to it. On Ubuntu 24.04 x64, install <code>libcurl4t64</code>, extract the archive and start <code>./CyMCPHub</code>. Keep both Linux executables together.</p>\n<p>Use <strong>Sources</strong> to choose a project or add a JSON, JSONC or TOML configuration file. Select a server by name, then select its connector to see its status, transport and connection data. Use <strong>Refresh</strong> after editing the source files.</p>\n<figure data-cydoc-module=\"image\" data-cydoc-id=\"hub-window\" data-config=\"{&quot;id&quot;:&quot;hub-window&quot;,&quot;src&quot;:&quot;assets/images/hub-main.png&quot;,&quot;alt&quot;:&quot;CyMCPHub desktop window with the MCP inventory, SDK, CLI, Skills and Journal tabs.&quot;,&quot;title&quot;:&quot;CyMCPHub desktop window&quot;,&quot;controls&quot;:&quot;minimal&quot;}\"><img src=\"assets/images/hub-main.png\" alt=\"CyMCPHub desktop window with the MCP inventory, SDK, CLI, Skills and Journal tabs.\" loading=\"lazy\" decoding=\"async\"></figure><h2 id=\"sections\">Find your way<a class=\"heading-anchor\" href=\"#/en/welcome/sections\" aria-label=\"Link to Find your way\">#</a></h2><ul>\n<li><a href=\"#/en/inventory/connectors\">Explore MCP, SDKs and CLIs</a></li>\n<li><a href=\"#/en/assistant/chat\">Use the assistant and manage Skills</a></li>\n<li><a href=\"#/en/mcp/connect\">Connect an AI client and look up the public tools</a></li>\n<li><a href=\"#/en/desktop/background\">Keep the Hub running and locate its data</a></li>\n</ul>\n",
+      "text": "Open the Hub # On Windows, open CyMCPHub.exe and keep CyMCPHubMcp.exe next to it. On Ubuntu 24.04 x64, install libcurl4t64 , extract the archive and start ./CyMCPHub . Keep both Linux executables together. Use Sources to choose a project or add a JSON, JSONC or TOML configuration file. Select a server by name, then select its connector to see its status, transport and connection data. Use Refresh after editing the source files. Find your way # Explore MCP, SDKs and CLIs Use the assistant and manage Skills Connect an AI client and look up the public tools Keep the Hub running and locate its data",
+      "headings": [
+        {
+          "id": "start",
+          "text": "Open the Hub",
+          "level": 2
+        },
+        {
+          "id": "sections",
+          "text": "Find your way",
+          "level": 2
+        }
+      ],
+      "anchors": [],
+      "languages": [],
+      "code": "",
+      "assets": [
+        "assets/images/hub-main.png"
+      ],
+      "links": [
+        "#/en/inventory/connectors",
+        "#/en/assistant/chat",
+        "#/en/mcp/connect",
+        "#/en/desktop/background"
+      ],
+      "kind": "media"
+    },
+    {
+      "id": "assistant",
+      "title": "Assistant et Skills",
+      "description": "Ouvrir le chat séparé et collecter ou rédiger des Skills réutilisables.",
+      "section": "Utiliser CyMCPHub",
+      "order": 2,
+      "revision": "1",
+      "sourceRevision": "1",
+      "parent": "welcome",
+      "locale": "fr",
+      "html": "<h2 id=\"chat\">Travailler avec l’onglet courant<a class=\"heading-anchor\" href=\"#/fr/assistant/chat\" aria-label=\"Lien vers Travailler avec l’onglet courant\">#</a></h2><p><strong>Assistant</strong> ouvre une deuxième fenêtre. Sélectionnez et connectez un fournisseur disponible, par exemple la CLI Codex. Le chat reçoit l’onglet actif et la sélection du Hub. Utilisez <strong>Ouvrir dans l’assistant</strong> depuis la fiche d’un connecteur pour donner au chat accès à ses outils. Demandez à l’assistant d’inspecter une action avant de l’exécuter.</p>\n<figure data-cydoc-module=\"image\" data-cydoc-id=\"chat-window\" data-config=\"{&quot;id&quot;:&quot;chat-window&quot;,&quot;src&quot;:&quot;assets/images/hub-assistant.png&quot;,&quot;alt&quot;:&quot;Fenêtre séparée de l’assistant CyMCPHub qui affiche l’onglet Serveurs MCP en contexte.&quot;,&quot;title&quot;:&quot;Fenêtre de l’assistant et onglet courant du Hub&quot;,&quot;controls&quot;:&quot;minimal&quot;}\"><img src=\"assets/images/hub-assistant.png\" alt=\"Fenêtre séparée de l’assistant CyMCPHub qui affiche l’onglet Serveurs MCP en contexte.\" loading=\"lazy\" decoding=\"async\"></figure><h2 id=\"skills\">Collecter ou rédiger un Skill<a class=\"heading-anchor\" href=\"#/fr/assistant/skills\" aria-label=\"Lien vers Collecter ou rédiger un Skill\">#</a></h2><p>Après une analyse de logiciel, consultez les fichiers <code>SKILL.md</code> détectés. Depuis le sous-onglet <strong>Skills</strong> d’un connecteur, collectez le Markdown fourni comme ressource ou via <code>search_skills</code> et <code>get_skill</code>. La bibliothèque <strong>Skills</strong> permet d’ouvrir et de copier les documents collectés.</p>\n<p>Utilisez <strong>Créer avec l’assistant</strong> pour préparer une demande de Skill pour le connecteur sélectionné. Demandez à l’assistant de consulter les descriptions des outils et d’enregistrer un Markdown avec les champs YAML <code>name</code> et <code>description</code>. Relisez le texte enregistré avant de l’utiliser dans un autre client.</p>\n",
+      "text": "Travailler avec l’onglet courant # Assistant ouvre une deuxième fenêtre. Sélectionnez et connectez un fournisseur disponible, par exemple la CLI Codex. Le chat reçoit l’onglet actif et la sélection du Hub. Utilisez Ouvrir dans l’assistant depuis la fiche d’un connecteur pour donner au chat accès à ses outils. Demandez à l’assistant d’inspecter une action avant de l’exécuter. Collecter ou rédiger un Skill # Après une analyse de logiciel, consultez les fichiers SKILL.md détectés. Depuis le sous-onglet Skills d’un connecteur, collectez le Markdown fourni comme ressource ou via search_skills et get_skill . La bibliothèque Skills permet d’ouvrir et de copier les documents collectés. Utilisez Créer avec l’assistant pour préparer une demande de Skill pour le connecteur sélectionné. Demandez à l’assistant de consulter les descriptions des outils et d’enregistrer un Markdown avec les champs YAML name et description . Relisez le texte enregistré avant de l’utiliser dans un autre client.",
+      "headings": [
+        {
+          "id": "chat",
+          "text": "Travailler avec l’onglet courant",
+          "level": 2
+        },
+        {
+          "id": "skills",
+          "text": "Collecter ou rédiger un Skill",
+          "level": 2
+        }
+      ],
+      "anchors": [],
+      "languages": [],
+      "code": "",
+      "assets": [
+        "assets/images/hub-assistant.png"
+      ],
+      "links": [],
+      "kind": "media"
+    },
+    {
+      "id": "desktop",
+      "title": "Arrière-plan et données",
+      "description": "Garder le Hub accessible et retrouver les annotations et Skills.",
+      "section": "Utiliser CyMCPHub",
+      "order": 3,
+      "revision": "1",
+      "sourceRevision": "1",
+      "parent": "welcome",
+      "locale": "fr",
+      "html": "<h2 id=\"background\">Garder le Hub accessible<a class=\"heading-anchor\" href=\"#/fr/desktop/background\" aria-label=\"Lien vers Garder le Hub accessible\">#</a></h2><p>Quand l’icône de la zone de notification est disponible, fermer la fenêtre principale laisse le Hub actif. Le menu de l’icône permet de rouvrir la fenêtre principale ou l’assistant, d’activer le démarrage à l’ouverture de session et de quitter l’application. <code>--tray</code> démarre avec la fenêtre principale masquée. Sous Ubuntu, l’affichage de l’icône nécessite un bureau qui prend en charge AppIndicator et le paquet <code>libayatana-appindicator3-1</code>.</p>\n<h2 id=\"data\">Retrouver le dossier de données<a class=\"heading-anchor\" href=\"#/fr/desktop/data\" aria-label=\"Lien vers Retrouver le dossier de données\">#</a></h2><table>\n<thead>\n<tr>\n<th>Système</th>\n<th>Par défaut</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>Windows</td>\n<td><code>%LOCALAPPDATA%\\CyMCPHub</code></td>\n</tr>\n<tr>\n<td>Linux</td>\n<td><code>$XDG_DATA_HOME/cymcphub</code> ou <code>~/.local/share/cymcphub</code></td>\n</tr>\n<tr>\n<td>macOS</td>\n<td><code>~/Library/Application Support/CyMCPHub</code></td>\n</tr>\n</tbody></table>\n<p>La fenêtre et le serveur stdio partagent les annotations et les Skills de ce dossier. Définissez <code>CYMCP_HUB_DATA</code> pour utiliser un autre dossier. Le journal est conservé en mémoire pour le processus courant.</p>\n",
+      "text": "Garder le Hub accessible # Quand l’icône de la zone de notification est disponible, fermer la fenêtre principale laisse le Hub actif. Le menu de l’icône permet de rouvrir la fenêtre principale ou l’assistant, d’activer le démarrage à l’ouverture de session et de quitter l’application. --tray démarre avec la fenêtre principale masquée. Sous Ubuntu, l’affichage de l’icône nécessite un bureau qui prend en charge AppIndicator et le paquet libayatana-appindicator3-1 . Retrouver le dossier de données # Système Par défaut Windows %LOCALAPPDATA%\\CyMCPHub Linux $XDG_DATA_HOME/cymcphub ou ~/.local/share/cymcphub macOS ~/Library/Application Support/CyMCPHub La fenêtre et le serveur stdio partagent les annotations et les Skills de ce dossier. Définissez CYMCP_HUB_DATA pour utiliser un autre dossier. Le journal est conservé en mémoire pour le processus courant.",
+      "headings": [
+        {
+          "id": "background",
+          "text": "Garder le Hub accessible",
+          "level": 2
+        },
+        {
+          "id": "data",
+          "text": "Retrouver le dossier de données",
+          "level": 2
+        }
+      ],
+      "anchors": [],
+      "languages": [],
+      "code": "",
+      "assets": [],
+      "links": [],
+      "kind": "guide"
+    },
+    {
+      "id": "inventory",
+      "title": "Explorer l’inventaire",
+      "description": "Trouver les connecteurs locaux, consulter leurs outils et analyser les logiciels.",
+      "section": "Utiliser CyMCPHub",
+      "order": 1,
+      "revision": "1",
+      "sourceRevision": "1",
+      "parent": "welcome",
+      "locale": "fr",
+      "html": "<h2 id=\"connectors\">Serveurs et connecteurs<a class=\"heading-anchor\" href=\"#/fr/inventory/connectors\" aria-label=\"Lien vers Serveurs et connecteurs\">#</a></h2><p><strong>Serveurs MCP</strong> regroupe les connecteurs de même nom. Chaque source, transport et annotation reste associé à son connecteur. La recherche et le filtre d’activité affinent la liste des groupes.</p>\n<p><strong>MCP confirmé</strong> indique qu’un endpoint HTTP local a répondu à l’initialisation MCP. La découverte TCP teste <code>/mcp</code> sur les ports en écoute sur la boucle locale. Le Hub peut aussi vérifier un chemin HTTP local configuré. <strong>Processus repéré</strong> signifie que la commande d’un connecteur stdio configuré correspond à un processus local lisible. L’authentification et les droits d’accès aux processus peuvent influer sur ces résultats.</p>\n<p>Le Hub lit les réglages courants de Codex, Claude Desktop, Claude Code, VS Code, Cursor, Gemini CLI, Windsurf et OpenCode. Les données de connexion masquent les valeurs des identifiants configurés. Récupérez-les localement depuis leur fichier source.</p>\n<h2 id=\"actions\">Appeler les outils et lire les ressources<a class=\"heading-anchor\" href=\"#/fr/inventory/actions\" aria-label=\"Lien vers Appeler les outils et lire les ressources\">#</a></h2><p>Dans <strong>Outils</strong>, chargez la liste du connecteur sélectionné et choisissez une action. Consultez son schéma, saisissez ses arguments JSON et exécutez-la. <strong>Ressources</strong> permet de lister et lire les URI. Une connexion stdio lance un processus dédié. <strong>Déconnecter</strong> ferme la session sélectionnée. Le <strong>Journal</strong> indique les opérations, les statuts HTTP et les diagnostics de l’assistant. Copiez-le en JSON Lines pour partager un diagnostic.</p>\n<h2 id=\"software\">Rechercher des SDK et des CLI<a class=\"heading-anchor\" href=\"#/fr/inventory/software\" aria-label=\"Lien vers Rechercher des SDK et des CLI\">#</a></h2><p>Dans <strong>SDK</strong> ou <strong>CLI</strong>, choisissez un dossier ou un fichier. Le Hub recherche des références de compilation CyMCPSDK, des noms de bibliothèques, des marqueurs binaires et des noms de CLI connues. Il lit les fichiers sans les exécuter. L’inventaire CLI peut inclure les exécutables trouvés dans le <code>PATH</code>. Chaque résultat affiche son chemin et les indices de détection.</p>\n",
+      "text": "Serveurs et connecteurs # Serveurs MCP regroupe les connecteurs de même nom. Chaque source, transport et annotation reste associé à son connecteur. La recherche et le filtre d’activité affinent la liste des groupes. MCP confirmé indique qu’un endpoint HTTP local a répondu à l’initialisation MCP. La découverte TCP teste /mcp sur les ports en écoute sur la boucle locale. Le Hub peut aussi vérifier un chemin HTTP local configuré. Processus repéré signifie que la commande d’un connecteur stdio configuré correspond à un processus local lisible. L’authentification et les droits d’accès aux processus peuvent influer sur ces résultats. Le Hub lit les réglages courants de Codex, Claude Desktop, Claude Code, VS Code, Cursor, Gemini CLI, Windsurf et OpenCode. Les données de connexion masquent les valeurs des identifiants configurés. Récupérez-les localement depuis leur fichier source. Appeler les outils et lire les ressources # Dans Outils , chargez la liste du connecteur sélectionné et choisissez une action. Consultez son schéma, saisissez ses arguments JSON et exécutez-la. Ressources permet de lister et lire les URI. Une connexion stdio lance un processus dédié. Déconnecter ferme la session sélectionnée. Le Journal indique les opérations, les statuts HTTP et les diagnostics de l’assistant. Copiez-le en JSON Lines pour partager un diagnostic. Rechercher des SDK et des CLI # Dans SDK ou CLI , choisissez un dossier ou un fichier. Le Hub recherche des références de compilation CyMCPSDK, des noms de bibliothèques, des marqueurs binaires et des noms de CLI connues. Il lit les fichiers sans les exécuter. L’inventaire CLI peut inclure les exécutables trouvés dans le PATH . Chaque résultat affiche son chemin et les indices de détection.",
+      "headings": [
+        {
+          "id": "connectors",
+          "text": "Serveurs et connecteurs",
+          "level": 2
+        },
+        {
+          "id": "actions",
+          "text": "Appeler les outils et lire les ressources",
+          "level": 2
+        },
+        {
+          "id": "software",
+          "text": "Rechercher des SDK et des CLI",
+          "level": 2
+        }
+      ],
+      "anchors": [],
+      "languages": [],
+      "code": "",
+      "assets": [],
+      "links": [],
+      "kind": "guide"
+    },
+    {
+      "id": "mcp",
+      "title": "Connexion et outils MCP",
+      "description": "Connecter un client IA en stdio ou en HTTP Streamable local.",
+      "section": "Utiliser CyMCPHub",
+      "order": 4,
+      "revision": "1",
+      "sourceRevision": "1",
+      "parent": "welcome",
+      "locale": "fr",
+      "html": "<h2 id=\"connect\">Connecter un client IA<a class=\"heading-anchor\" href=\"#/fr/mcp/connect\" aria-label=\"Lien vers Connecter un client IA\">#</a></h2><p>Dans <strong>Connexion IA</strong>, copiez la configuration <code>mcpServers</code> générée vers votre client. En stdio, le client lance <code>CyMCPHubMcp</code> à la demande. La cible macOS place ce binaire dans <code>CyMCPHub.app/Contents/MacOS/</code>.</p>\n<p>Pour une connexion en arrière-plan, ouvrez <strong>Connexion IA → Service MCP (HTTP)</strong>, activez-le et copiez sa configuration. Il écoute sur <code>http://127.0.0.1:48786/mcp</code>. La configuration copiée contient un jeton Bearer. Conservez-le dans la configuration privée du client. Le service redémarre avec le Hub après activation.</p>\n<p>Les deux exécutables acceptent <code>--workspace &lt;dossier&gt;</code> et <code>--config &lt;fichier&gt;</code>. Utilisez <code>--no-port-scan</code> pour désactiver la découverte TCP. Le serveur accepte aussi <code>--list</code> pour afficher l’inventaire en JSON puis quitter.</p>\n<h2 id=\"tools\">Outils publics<a class=\"heading-anchor\" href=\"#/fr/mcp/tools\" aria-label=\"Lien vers Outils publics\">#</a></h2><table>\n<thead>\n<tr>\n<th>Outil</th>\n<th>Opération</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>mcp_list</code></td>\n<td>Lister et filtrer les connecteurs. Utilisez <code>refresh: true</code> pour actualiser et <code>groupKey</code> pour retrouver les connecteurs qui partagent un nom.</td>\n</tr>\n<tr>\n<td><code>mcp_catalog</code></td>\n<td>Rechercher des applications et leurs outils. Choisissez <code>format: &quot;markdown&quot;</code> pour obtenir une synthèse. Utilisez <code>id</code> ou <code>includeStdio</code> pour demander l’accès à un catalogue stdio.</td>\n</tr>\n<tr>\n<td><code>mcp_get</code></td>\n<td>Lire la source, les données de connexion et l’annotation à partir de l’identifiant du connecteur.</td>\n</tr>\n<tr>\n<td><code>mcp_annotate</code></td>\n<td>Remplacer une annotation. Fournissez une chaîne vide pour l’effacer.</td>\n</tr>\n<tr>\n<td><code>mcp_tools</code> et <code>mcp_call</code></td>\n<td>Obtenir les schémas des actions d’un connecteur et exécuter l’action choisie avec ses arguments.</td>\n</tr>\n<tr>\n<td><code>mcp_resources</code> et <code>mcp_read_resource</code></td>\n<td>Lister et lire les ressources du connecteur sélectionné.</td>\n</tr>\n<tr>\n<td><code>mcp_disconnect</code></td>\n<td>Fermer la session établie par le Hub.</td>\n</tr>\n<tr>\n<td><code>mcp_journal</code></td>\n<td>Récupérer le journal du processus courant en JSON Lines.</td>\n</tr>\n<tr>\n<td><code>mcp_list_skills</code> et <code>mcp_read_skill</code></td>\n<td>Rechercher et lire les Skills enregistrés dans le Hub.</td>\n</tr>\n<tr>\n<td><code>mcp_collect_skills</code> et <code>mcp_import_skill</code></td>\n<td>Collecter les Skills d’un connecteur ou importer un fichier du projet.</td>\n</tr>\n<tr>\n<td><code>mcp_save_skill</code></td>\n<td>Valider et enregistrer un nouveau Skill pour le connecteur choisi.</td>\n</tr>\n<tr>\n<td><code>sdk_scan</code></td>\n<td>Analyser un logiciel via un <code>path</code> relatif au projet. Utilisez <code>includePath: false</code> pour limiter les résultats à cette cible.</td>\n</tr>\n</tbody></table>\n<p>Pour une synthèse filtrée, appelez <code>mcp_catalog</code> avec <code>{&quot;query&quot;:&quot;search&quot;,&quot;format&quot;:&quot;markdown&quot;}</code>. Utilisez <code>mcp_tools</code> avec l’identifiant du connecteur pour obtenir les schémas complets.</p>\n",
+      "text": "Connecter un client IA # Dans Connexion IA , copiez la configuration mcpServers générée vers votre client. En stdio, le client lance CyMCPHubMcp à la demande. La cible macOS place ce binaire dans CyMCPHub.app/Contents/MacOS/ . Pour une connexion en arrière-plan, ouvrez Connexion IA → Service MCP (HTTP) , activez-le et copiez sa configuration. Il écoute sur http://127.0.0.1:48786/mcp . La configuration copiée contient un jeton Bearer. Conservez-le dans la configuration privée du client. Le service redémarre avec le Hub après activation. Les deux exécutables acceptent --workspace <dossier> et --config <fichier> . Utilisez --no-port-scan pour désactiver la découverte TCP. Le serveur accepte aussi --list pour afficher l’inventaire en JSON puis quitter. Outils publics # Outil Opération mcp_list Lister et filtrer les connecteurs. Utilisez refresh: true pour actualiser et groupKey pour retrouver les connecteurs qui partagent un nom. mcp_catalog Rechercher des applications et leurs outils. Choisissez format: \"markdown\" pour obtenir une synthèse. Utilisez id ou includeStdio pour demander l’accès à un catalogue stdio. mcp_get Lire la source, les données de connexion et l’annotation à partir de l’identifiant du connecteur. mcp_annotate Remplacer une annotation. Fournissez une chaîne vide pour l’effacer. mcp_tools et mcp_call Obtenir les schémas des actions d’un connecteur et exécuter l’action choisie avec ses arguments. mcp_resources et mcp_read_resource Lister et lire les ressources du connecteur sélectionné. mcp_disconnect Fermer la session établie par le Hub. mcp_journal Récupérer le journal du processus courant en JSON Lines. mcp_list_skills et mcp_read_skill Rechercher et lire les Skills enregistrés dans le Hub. mcp_collect_skills et mcp_import_skill Collecter les Skills d’un connecteur ou importer un fichier du projet. mcp_save_skill Valider et enregistrer un nouveau Skill pour le connecteur choisi. sdk_scan Analyser un logiciel via un path relatif au projet. Utilisez includePath: false pour limiter les résultats à cette cible. Pour une synthèse filtrée, appelez mcp_catalog avec {\"query\":\"search\",\"format\":\"markdown\"} . Utilisez mcp_tools avec l’identifiant du connecteur pour obtenir les schémas complets.",
+      "headings": [
+        {
+          "id": "connect",
+          "text": "Connecter un client IA",
+          "level": 2
+        },
+        {
+          "id": "tools",
+          "text": "Outils publics",
+          "level": 2
+        }
+      ],
+      "anchors": [],
+      "languages": [],
+      "code": "",
+      "assets": [],
+      "links": [],
+      "kind": "guide"
+    },
+    {
+      "id": "welcome",
+      "title": "Premiers pas",
+      "description": "Ouvrir l’application et trouver un premier connecteur.",
+      "section": "Utiliser CyMCPHub",
+      "order": 0,
+      "revision": "1",
+      "sourceRevision": "1",
+      "locale": "fr",
+      "html": "<h2 id=\"start\">Ouvrir le Hub<a class=\"heading-anchor\" href=\"#/fr/welcome/start\" aria-label=\"Lien vers Ouvrir le Hub\">#</a></h2><p>Sous Windows, ouvrez <strong>CyMCPHub.exe</strong> et gardez <strong>CyMCPHubMcp.exe</strong> à côté. Sous Ubuntu 24.04 x64, installez <code>libcurl4t64</code>, extrayez l’archive et lancez <code>./CyMCPHub</code>. Conservez les deux exécutables Linux dans le même dossier.</p>\n<p>Dans <strong>Sources</strong>, choisissez un projet ou ajoutez un fichier JSON, JSONC ou TOML. Sélectionnez un nom de serveur, puis un connecteur pour voir son état, son transport et ses données de connexion. Cliquez sur <strong>Actualiser</strong> après avoir modifié les fichiers sources.</p>\n<figure data-cydoc-module=\"image\" data-cydoc-id=\"hub-window\" data-config=\"{&quot;id&quot;:&quot;hub-window&quot;,&quot;src&quot;:&quot;assets/images/hub-main.png&quot;,&quot;alt&quot;:&quot;Fenêtre de CyMCPHub avec les onglets d’inventaire MCP, SDK, CLI, Skills et Journal.&quot;,&quot;title&quot;:&quot;Fenêtre principale de CyMCPHub&quot;,&quot;controls&quot;:&quot;minimal&quot;}\"><img src=\"assets/images/hub-main.png\" alt=\"Fenêtre de CyMCPHub avec les onglets d’inventaire MCP, SDK, CLI, Skills et Journal.\" loading=\"lazy\" decoding=\"async\"></figure><h2 id=\"sections\">Se repérer<a class=\"heading-anchor\" href=\"#/fr/welcome/sections\" aria-label=\"Lien vers Se repérer\">#</a></h2><ul>\n<li><a href=\"#/fr/inventory/connectors\">Explorer les MCP, SDK et CLI</a></li>\n<li><a href=\"#/fr/assistant/chat\">Utiliser l’assistant et gérer les Skills</a></li>\n<li><a href=\"#/fr/mcp/connect\">Connecter un client IA et consulter les outils publics</a></li>\n<li><a href=\"#/fr/desktop/background\">Garder le Hub en arrière-plan et retrouver ses données</a></li>\n</ul>\n",
+      "text": "Ouvrir le Hub # Sous Windows, ouvrez CyMCPHub.exe et gardez CyMCPHubMcp.exe à côté. Sous Ubuntu 24.04 x64, installez libcurl4t64 , extrayez l’archive et lancez ./CyMCPHub . Conservez les deux exécutables Linux dans le même dossier. Dans Sources , choisissez un projet ou ajoutez un fichier JSON, JSONC ou TOML. Sélectionnez un nom de serveur, puis un connecteur pour voir son état, son transport et ses données de connexion. Cliquez sur Actualiser après avoir modifié les fichiers sources. Se repérer # Explorer les MCP, SDK et CLI Utiliser l’assistant et gérer les Skills Connecter un client IA et consulter les outils publics Garder le Hub en arrière-plan et retrouver ses données",
+      "headings": [
+        {
+          "id": "start",
+          "text": "Ouvrir le Hub",
+          "level": 2
+        },
+        {
+          "id": "sections",
+          "text": "Se repérer",
+          "level": 2
+        }
+      ],
+      "anchors": [],
+      "languages": [],
+      "code": "",
+      "assets": [
+        "assets/images/hub-main.png"
+      ],
+      "links": [
+        "#/fr/inventory/connectors",
+        "#/fr/assistant/chat",
+        "#/fr/mcp/connect",
+        "#/fr/desktop/background"
+      ],
+      "kind": "media"
+    }
+  ]
+}

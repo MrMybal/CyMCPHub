@@ -1,0 +1,95 @@
+--- a/src/mcp.cpp
++++ b/src/mcp.cpp
+@@ -10,6 +10,9 @@
+ namespace {
+ using mcp_http::legacy;
+ using mcp_http::modern;
++bool client_legacy_version(std::string_view version) {
++    return mcp_http::legacy_version(version) || version == "2025-03-26";
++}
+ using mcp_http::version_key;
+ constexpr auto caps_key = "io.modelcontextprotocol/clientCapabilities";
+ std::size_t page_offset(const Json& params, const std::string& generation, std::size_t size) {
+@@ -651,7 +654,7 @@
+                 process->wait(grace);
+             }
+ #ifdef CYMCP_HAS_HTTP
+-            else if (!session_id.empty() && mcp_http::legacy_version(protocol)) {
++            else if (!session_id.empty() && client_legacy_version(protocol)) {
+                 HttpRequest req;
+                 req.method = "DELETE";
+                 req.url = url;
+@@ -806,10 +809,13 @@
+             if (!session_id.empty())
+                 req.headers["Mcp-Session-Id"] = session_id;
+             HttpResponse response;
++            PerformanceSpan transfer(cache_options.performance, "mcp.http", method, message);
+             try {
+                 response = HttpClient().perform(req, cancel);
++                transfer.finish_bytes(std::to_string(response.status), response.body.size());
+             } catch (const Error& e) {
+-                if (mcp_http::legacy_version(protocol) && method == "tools/call" &&
++                transfer.finish(e.code);
++                if (client_legacy_version(protocol) && method == "tools/call" &&
+                     (e.code == "Cancelled" || e.code == "Timeout")) {
+                     // Legacy peers may continue work after the request socket closes.
+                     Cancellation delivery;
+@@ -822,11 +828,12 @@
+                 }
+                 throw;
+             }
+-            if (method == "initialize" && mcp_http::legacy_version(protocol) &&
++            if (method == "initialize" && client_legacy_version(protocol) &&
+                 response.status >= 200 && response.status < 300 &&
+                 response.headers.count("mcp-session-id"))
+                 session_id = response.headers.at("mcp-session-id");
+-            if (notify && response.status == 202)
++            if (notify && response.status >= 200 && response.status < 300 &&
++                (response.status == 202 || response.body.empty()))
+                 return nullptr;
+             if (response.status < 200 || response.status >= 300) {
+                 try {
+@@ -839,7 +846,7 @@
+                 // error) still lets connect() fall back to the legacy handshake.
+                 if (!reply.is_object() || !reply.contains("error"))
+                     reply = rpc_error(id, -32600, "MCP HTTP request rejected");
+-                else if (!reply.contains("id") || reply.at("id").is_null())
++                else
+                     reply["id"] = id;
+             } else if (response.headers["content-type"].find("text/event-stream") !=
+                        std::string::npos) {
+@@ -1111,7 +1118,7 @@
+                 !negotiated.at("protocolVersion").is_string())
+                 throw Error("ProtocolError", "Missing negotiated MCP protocol version");
+             p.protocol = negotiated.at("protocolVersion").get<std::string>();
+-            if (!mcp_http::legacy_version(p.protocol))
++            if (!client_legacy_version(p.protocol))
+                 throw Error("Unsupported", "Peer negotiated an unsupported MCP protocol version");
+             p.tool_lookup = negotiated.value("capabilities", Json::object())
+                                 .value("experimental", Json::object())
+--- a/src/codex.cpp
++++ b/src/codex.cpp
+@@ -133,9 +133,13 @@
+     }
+     Json read(const Cancellation& cancel) {
+         ProcessLine line;
++        std::string diagnostic;
+         while (process->next(line, cancel)) {
+-            if (line.stderr_stream)
++            if (line.stderr_stream) {
++                if (!line.text.empty())
++                    diagnostic = redact_error_message(line.text, process_error_secrets(options.process));
+                 continue;
++            }
+             try {
+                 auto value = parse_json(line.text, provider_message_limit);
+                 if (!value.is_object())
+@@ -145,7 +149,7 @@
+                 throw Error("MalformedJSON", "Invalid provider protocol JSON");
+             }
+         }
+-        throw Error("UnexpectedEOF", "Provider process closed its stream");
++        throw Error("UnexpectedEOF", diagnostic.empty() ? "Provider process closed its stream" : diagnostic);
+     }
+     void server_request(const Json& request, const CallContext& context) {
+         auto method = request.at("method").get<std::string>();
