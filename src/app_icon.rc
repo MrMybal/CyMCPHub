@@ -1,0 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Cyberalien
+// SPDX-License-Identifier: GPL-3.0-only
+
+#include "app_icon_resource.h"
+
+CYMCPHUB_APP_ICON ICON "cymcphub.ico"

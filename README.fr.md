@@ -7,7 +7,9 @@
       <sub>README</sub><br>
       <a href="README.md">English</a> · <a href="README.fr.md">Français</a>
     </td>
-    <td width="400" align="center" valign="middle"></td>
+    <td width="400" align="center" valign="middle">
+      <img src="Documentation/DocData/assets/cymcphub-logo.png" alt="Logo de CyMCPHub" width="128">
+    </td>
     <td width="300" align="right" valign="top">
       <p><sub>Licence de l’application</sub><br><a href="LICENSE"><strong>GPL-3.0-only</strong></a></p>
       <p><sub>Version</sub><br><a href="VERSION.fr.md"><strong>0.3.0</strong></a></p>

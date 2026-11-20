@@ -15,6 +15,8 @@
 #include <iostream>
 
 namespace {
+using Surface = std::unique_ptr<SDL_Surface, decltype(&SDL_DestroySurface)>;
+
 struct Sdl {
     Sdl() {
         SDL_SetAppMetadata("CyMCPHub", nullptr, "com.cyberalien.cymcphub");
@@ -30,9 +32,10 @@ struct Screen {
     ImGuiContext* context = nullptr;
     float dpi = 1;
 
-    Screen(const char* title, int width, int height, int min_width, int min_height) {
+    Screen(const char* title, int width, int height, int min_width, int min_height, SDL_Surface* icon) {
         window.reset(SDL_CreateWindow(title, width, height, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_HIDDEN));
         if (!window) throw std::runtime_error(SDL_GetError());
+        if (icon) SDL_SetWindowIcon(window.get(), icon);
         SDL_SetWindowMinimumSize(window.get(), min_width, min_height);
         renderer.reset(SDL_CreateRenderer(window.get(), nullptr));
         if (!renderer) throw std::runtime_error(SDL_GetError());
@@ -96,15 +99,15 @@ struct Tray {
     SDL_Window* window;
     const hub::Options& options;
 
-    Tray(SDL_Window* host, const hub::Options& startup_options) : window(host), options(startup_options) {
-        std::unique_ptr<SDL_Surface, decltype(&SDL_DestroySurface)> surface(SDL_CreateSurface(24, 24, SDL_PIXELFORMAT_RGBA32), SDL_DestroySurface);
+    Tray(SDL_Window* host, const hub::Options& startup_options, SDL_Surface* logo) : window(host), options(startup_options) {
+        const Surface surface(logo ? nullptr : SDL_CreateSurface(24, 24, SDL_PIXELFORMAT_RGBA32), SDL_DestroySurface);
         if (surface) {
             SDL_FillSurfaceRect(surface.get(), nullptr, SDL_MapSurfaceRGBA(surface.get(), 0, 0, 0, 0));
             const SDL_Rect outer{3, 3, 18, 18}, inner{7, 7, 10, 10};
             SDL_FillSurfaceRect(surface.get(), &outer, SDL_MapSurfaceRGBA(surface.get(), 240, 166, 63, 255));
             SDL_FillSurfaceRect(surface.get(), &inner, SDL_MapSurfaceRGBA(surface.get(), 38, 42, 52, 255));
         }
-        icon.reset(SDL_CreateTray(surface.get(), "CyMCPHub"));
+        icon.reset(SDL_CreateTray(logo ? logo : surface.get(), "CyMCPHub"));
         if (!icon) return;
         const auto menu = SDL_CreateTrayMenu(icon.get());
         if (!menu) { icon.reset(); return; }
@@ -149,9 +152,11 @@ void run(hub::Arguments args) {
     Sdl sdl;
     hub::fs::create_directories(hub::data_path());
     const hub::FileLock instance(hub::data_path() / "desktop.lock");
-    Screen main("CyMCPHub", 1200, 790, 860, 610);
+    const auto* base = SDL_GetBasePath();
+    const Surface logo(base ? SDL_LoadPNG((std::string(base) + "cymcphub-logo.png").c_str()) : nullptr, SDL_DestroySurface);
+    Screen main("CyMCPHub", 1200, 790, 860, 610, logo.get());
     std::unique_ptr<Screen> assistant;
-    const Tray tray(main.window.get(), args.options);
+    const Tray tray(main.window.get(), args.options, logo.get());
     if (!args.tray || !tray.icon) SDL_ShowWindow(main.window.get());
 
     hub::draw_hub(main.window.get(), args.options, [&](const hub::Draw& draw_main, const hub::Draw& draw_assistant,
@@ -177,7 +182,7 @@ void run(hub::Arguments args) {
         // Keep the screen context current for the shared catalogue and the assistant controller.
         if (main.visible() || hub::tray_assistant_requested || assistant_open) main.render(draw_main);
         if (assistant_open) {
-            if (!assistant) assistant = std::make_unique<Screen>("Assistant · CyMCPHub", 700, 620, 465, 380);
+            if (!assistant) assistant = std::make_unique<Screen>("Assistant · CyMCPHub", 700, 620, 465, 380, logo.get());
             if (focus) {
                 SDL_ShowWindow(assistant->window.get());
                 SDL_RaiseWindow(assistant->window.get());

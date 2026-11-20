@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "ui.hpp"
+#include "app_icon_resource.h"
 
 #include <cyui/Core.h>
 #include <d3d11.h>
@@ -58,6 +59,23 @@ constexpr wchar_t run_key[] = L"Software\\Microsoft\\Windows\\CurrentVersion\\Ru
 UINT taskbar_created = 0;
 bool tray_installed = false;
 std::wstring startup_command;
+void (*create_platform_window)(ImGuiViewport*) = nullptr;
+
+HICON application_icon(bool small_icon) {
+    const auto width = GetSystemMetrics(small_icon ? SM_CXSMICON : SM_CXICON);
+    const auto height = GetSystemMetrics(small_icon ? SM_CYSMICON : SM_CYICON);
+    const auto icon = static_cast<HICON>(LoadImageW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(CYMCPHUB_APP_ICON),
+                                                   IMAGE_ICON, width, height, LR_SHARED));
+    return icon ? icon : LoadIconW(nullptr, IDI_APPLICATION);
+}
+
+void create_branded_platform_window(ImGuiViewport* viewport) {
+    create_platform_window(viewport);
+    if (const auto window = static_cast<HWND>(viewport->PlatformHandleRaw)) {
+        SendMessageW(window, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(application_icon(false)));
+        SendMessageW(window, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(application_icon(true)));
+    }
+}
 
 void show_window(HWND window) {
     ShowWindow(window, IsIconic(window) ? SW_RESTORE : SW_SHOW);
@@ -71,7 +89,7 @@ bool update_tray(HWND window, DWORD action) {
     icon.uID = 1;
     icon.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
     icon.uCallbackMessage = tray_message;
-    icon.hIcon = LoadIconW(nullptr, IDI_APPLICATION);
+    icon.hIcon = reinterpret_cast<HICON>(GetClassLongPtrW(window, GCLP_HICONSM));
     wcscpy_s(icon.szTip, L"CyMCPHub");
     return Shell_NotifyIconW(action, &icon) != FALSE;
 }
@@ -209,6 +227,9 @@ void run_window(HWND window, Options options) {
     cyui::loadFonts();
     ImGui_ImplWin32_Init(window);
     ImGui_ImplDX11_Init(renderer.device.Get(), renderer.context.Get());
+    auto& platform = ImGui::GetPlatformIO();
+    create_platform_window = platform.Platform_CreateWindow;
+    if (create_platform_window) platform.Platform_CreateWindow = create_branded_platform_window;
 
     bool occluded = false;
     draw_hub(window, std::move(options), [&](const Draw& draw, const Draw& draw_assistant, bool& assistant_open, bool&) {
@@ -306,7 +327,8 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int show) {
         window_class.lpfnWndProc = window_proc;
         window_class.hInstance = instance;
         window_class.hCursor = LoadCursorW(nullptr, IDC_ARROW);
-        window_class.hIcon = LoadIconW(nullptr, IDI_APPLICATION);
+        window_class.hIcon = application_icon(false);
+        window_class.hIconSm = application_icon(true);
         window_class.lpszClassName = window_class_name;
         if (!RegisterClassExW(&window_class)) return 1;
         const auto window = CreateWindowW(window_class.lpszClassName, L"CyMCPHub", WS_OVERLAPPEDWINDOW,

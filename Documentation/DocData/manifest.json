@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "name": "CyMCPHub",
+  "logo": "assets/cymcphub-logo.png",
   "version": "0.3.0",
   "defaultLocale": "en",
   "locales": [

@@ -15,6 +15,7 @@
   "homePage": "welcome",
   "content": "manual",
   "assets": "assets",
+  "logo": "assets/cymcphub-logo.png",
   "out": "../Documentation",
   "modules": [
     "image"
