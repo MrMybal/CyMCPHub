@@ -46,15 +46,41 @@ ctest --test-dir build --output-on-failure --no-tests=error
 cmake --install build --component Hub --prefix stage
 ```
 
-Le workflow manuel [Native packages](.github/workflows/native-packages.yml) construit et teste les trois paquets sur leurs systèmes respectifs. Le paquet macOS de ce workflow utilise une signature locale ad hoc.
+Le workflow manuel [Native packages](https://github.com/MrMybal/CyMCPHub/blob/main/.github/workflows/native-packages.yml) construit et teste les trois paquets sur leurs systèmes respectifs. Le paquet macOS de ce workflow utilise une signature locale ad hoc.
 
 ## Manuel / Manual
 
-Avec Node.js 22+, régénérez le lecteur après avoir modifié les sources de .CyDocBuild. Use the same commands to build and validate both languages.
+Avec Node.js 22+, régénérez le lecteur après avoir modifié les sources de `.CyDocBuild`.
+
+Use Node.js 22+ and regenerate the reader after editing the `.CyDocBuild` sources.
 
 ```sh
 npm ci --prefix .CyDocBuild
 npm --prefix .CyDocBuild run check
 ```
 
-Ouvrez `Documentation/Documentation.html` dans votre navigateur. The native packages include the complete offline reader.
+Ouvrez `Documentation/Documentation.html` dans votre navigateur. Le paquet généré par `cmake --install` inclut le lecteur hors ligne complet.
+
+Open `Documentation/Documentation.html` in a browser. The package produced by `cmake --install` includes the complete offline reader.
+
+## Archiver un paquet local / Archive a local package
+
+Les commandes ci-dessous archivent le dossier `stage` généré par CMake. / These commands archive the `stage` directory produced by CMake.
+
+**Windows**
+
+```powershell
+Compress-Archive -Path stage/* -DestinationPath CyMCPHub-windows-x64.zip
+```
+
+**Linux**
+
+```bash
+tar -C stage -czf CyMCPHub-linux-x64.tar.gz .
+```
+
+**macOS**
+
+```bash
+ditto -c -k --sequesterRsrc stage CyMCPHub-macos-universal.zip
+```

@@ -4,7 +4,7 @@ title: MCP connection and tools
 description: Connect another AI client over stdio or local Streamable HTTP.
 section: Using CyMCPHub
 order: 4
-revision: 1
+revision: 2
 parent: welcome
 ---
 
@@ -33,4 +33,10 @@ Both executables accept `--workspace <directory>` and `--config <file>`. Use `--
 | `mcp_save_skill` | Validate and save a new Skill for the chosen connector. |
 | `sdk_scan` | Scan software by a workspace-relative `path`. Set `includePath: false` to limit results to that target. |
 
-For a searchable overview, call `mcp_catalog` with `{"query":"search","format":"markdown"}`. Use `mcp_tools` on the connector ID for the full input schemas.
+## Run your first query {#tools-example}
+
+1. Call `mcp_list` with `{"query":"notes","limit":10,"refresh":true}` and find the relevant entry in `servers`. Omit `query` to see all connectors. Use `nextOffset` as `offset` to load another page when the result includes it.
+2. Call `mcp_get` with the entry's `id` to confirm its source and transport. Call `mcp_tools` with the same `id` to inspect its input schemas. Loading tools from a stdio connector starts a dedicated session.
+3. Call `mcp_catalog` with `{"format":"markdown","toolLimit":10}` to get a summary. By default the catalogue queries verified HTTP connectors. Specify a connector ID to include its stdio tools when needed.
+
+If the list or schemas are missing, see [Troubleshoot MCP connections](doc:troubleshooting#inventory).

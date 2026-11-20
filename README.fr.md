@@ -42,9 +42,17 @@ Les [notes de version](VERSION.fr.md) décrivent les plateformes et les limites 
 
 Ouvrez [Documentation.html](Documentation/Documentation.html#/fr/welcome) dans votre navigateur depuis le projet ou le paquet extrait. Gardez le dossier `DocData` à côté. Dans le Hub, **Connexion IA** génère la configuration client et permet d’activer le service HTTP en arrière-plan.
 
+## Connecter un client IA
+
+1. Dans **Sources**, choisissez le projet et ajoutez sa configuration MCP si nécessaire.
+2. Ouvrez **Connexion IA**. Choisissez **stdio** pour laisser le client lancer le serveur MCP du Hub, ou activez **Service MCP (HTTP)** pour utiliser l’application de bureau en cours d’exécution.
+3. Copiez la configuration vers votre client. Appelez `mcp_list` pour retrouver l’identifiant du connecteur, puis `mcp_tools` avec cet identifiant pour consulter les schémas. Utilisez `mcp_catalog` avec `format: "markdown"` pour obtenir une synthèse des applications.
+
+Le manuel hors ligne propose un [exemple MCP](Documentation/Documentation.html#/fr/mcp/tools-example) et des [étapes de dépannage](Documentation/Documentation.html#/fr/troubleshooting/inventory) quand un connecteur manque ou que le chargement des outils échoue.
+
 ## Compiler les sources
 
-Voir les [commandes de compilation](BUILD.md) et le [workflow Native packages](.github/workflows/native-packages.yml). La chaîne utilise CMake 3.24+, un compilateur C++20, Git et Python 3 pour les tests d’intégration. Node.js 22+ permet de régénérer le manuel.
+Voir les [commandes de compilation et de paquetage en local](BUILD.md). La chaîne utilise CMake 3.24+, un compilateur C++20, Git et Python 3 pour les tests d’intégration. Node.js 22+ permet de régénérer le manuel. Le dépôt contient aussi un [workflow de paquetage manuel](https://github.com/MrMybal/CyMCPHub/blob/main/.github/workflows/native-packages.yml).
 
 ---
 

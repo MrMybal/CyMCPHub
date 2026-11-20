@@ -42,9 +42,17 @@ Read the [version notes](VERSION.md) for platform coverage and current limits.
 
 Open [Documentation.html](Documentation/Documentation.html#/en/welcome) from the unpacked project or package in a browser. Keep the `DocData` folder alongside it. **AI setup** in the Hub generates the client configuration and enables the background HTTP service.
 
+## Connect an AI client
+
+1. In **Sources**, select the project and add its MCP configuration if needed.
+2. Open **AI setup**. Choose **stdio** to let your client launch the Hub's MCP server, or enable **MCP service (HTTP)** to use the running desktop Hub.
+3. Copy the configuration into your client. Call `mcp_list` to find a connector ID, then call `mcp_tools` with that ID to see the tool schemas. Use `mcp_catalog` with `format: "markdown"` for a summary across applications.
+
+The offline manual includes a [worked MCP example](Documentation/Documentation.html#/en/mcp/tools-example) and [troubleshooting steps](Documentation/Documentation.html#/en/troubleshooting/inventory) for missing connectors and errors while loading tools.
+
 ## Build from source
 
-See the [build commands](BUILD.md) and the [Native packages workflow](.github/workflows/native-packages.yml). The toolchain uses CMake 3.24+, a C++20 compiler, Git and Python 3 for the integration tests. Node.js 22+ regenerates the manual.
+See the [local build and packaging commands](BUILD.md). The toolchain uses CMake 3.24+, a C++20 compiler, Git and Python 3 for the integration tests. Node.js 22+ regenerates the manual. The repository also includes a [manual packaging workflow](https://github.com/MrMybal/CyMCPHub/blob/main/.github/workflows/native-packages.yml).
 
 ---
 

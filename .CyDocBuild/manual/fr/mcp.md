@@ -4,8 +4,8 @@ title: Connexion et outils MCP
 description: Connecter un client IA en stdio ou en HTTP Streamable local.
 section: Utiliser CyMCPHub
 order: 4
-revision: 1
-sourceRevision: 1
+revision: 2
+sourceRevision: 2
 parent: welcome
 ---
 
@@ -34,4 +34,10 @@ Les deux exécutables acceptent `--workspace <dossier>` et `--config <fichier>`.
 | `mcp_save_skill` | Valider et enregistrer un nouveau Skill pour le connecteur choisi. |
 | `sdk_scan` | Analyser un logiciel via un `path` relatif au projet. Utilisez `includePath: false` pour limiter les résultats à cette cible. |
 
-Pour une synthèse filtrée, appelez `mcp_catalog` avec `{"query":"search","format":"markdown"}`. Utilisez `mcp_tools` avec l’identifiant du connecteur pour obtenir les schémas complets.
+## Faire une première requête {#tools-example}
+
+1. Appelez `mcp_list` avec `{"query":"notes","limit":10,"refresh":true}` et retrouvez l’entrée concernée dans `servers`. Omettez `query` pour afficher tous les connecteurs. Lorsque le résultat contient `nextOffset`, passez sa valeur dans `offset` pour obtenir la page suivante.
+2. Appelez `mcp_get` avec l’`id` de l’entrée pour confirmer sa source et son transport. Appelez `mcp_tools` avec le même `id` pour consulter les schémas. Le chargement des outils d’un connecteur stdio lance une session dédiée.
+3. Appelez `mcp_catalog` avec `{"format":"markdown","toolLimit":10}` pour obtenir une synthèse. Par défaut, le catalogue interroge les connecteurs HTTP confirmés. Indiquez l’identifiant d’un connecteur pour inclure ses outils stdio si nécessaire.
+
+Si la liste ou les schémas manquent, consultez [Dépanner les connexions MCP](doc:troubleshooting#inventory).

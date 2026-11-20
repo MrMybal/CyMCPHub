@@ -4,8 +4,8 @@ title: Premiers pas
 description: Ouvrir l’application et trouver un premier connecteur.
 section: Utiliser CyMCPHub
 order: 0
-revision: 1
-sourceRevision: 1
+revision: 2
+sourceRevision: 2
 ---
 
 ## Ouvrir le Hub {#start}
@@ -24,3 +24,4 @@ Dans **Sources**, choisissez un projet ou ajoutez un fichier JSON, JSONC ou TOML
 - [Utiliser l’assistant et gérer les Skills](doc:assistant#chat)
 - [Connecter un client IA et consulter les outils publics](doc:mcp#connect)
 - [Garder le Hub en arrière-plan et retrouver ses données](doc:desktop#background)
+- [Dépanner les connexions MCP](doc:troubleshooting#inventory)

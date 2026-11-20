@@ -4,7 +4,7 @@ title: Get started
 description: Open the desktop app and find your first connector.
 section: Using CyMCPHub
 order: 0
-revision: 1
+revision: 2
 ---
 
 ## Open the Hub {#start}
@@ -23,3 +23,4 @@ Use **Sources** to choose a project or add a JSON, JSONC or TOML configuration f
 - [Use the assistant and manage Skills](doc:assistant#chat)
 - [Connect an AI client and look up the public tools](doc:mcp#connect)
 - [Keep the Hub running and locate its data](doc:desktop#background)
+- [Troubleshoot MCP connections](doc:troubleshooting#inventory)
