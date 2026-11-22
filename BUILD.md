@@ -15,6 +15,14 @@ cmake --install build --config Release --component Hub --prefix stage
 
 Le runtime Microsoft Visual C++ x64 est requis pour exécuter la version Release.
 
+### Installateur Windows / Windows installer
+
+Avec Inno Setup 6, lancez `./Build-Installer.ps1 -BuildDirectory build` depuis PowerShell. Passez `-Iscc` si le compilateur est dans un dossier portable. Le fichier créé dans `out` porte le nom `CyMCPHub-Setup-<version>-windows-x64.exe`, attendu par le Hub dans les releases GitHub.
+
+With Inno Setup 6, run `./Build-Installer.ps1 -BuildDirectory build` from PowerShell. Pass `-Iscc` for a portable compiler. The resulting `CyMCPHub-Setup-<version>-windows-x64.exe` asset name is used by the app's GitHub update check.
+
+Pour créer un paquet autonome du runtime Visual C++, ajoutez `'-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded$<$<CONFIG:Debug>:Debug>'` à la configuration d’un dossier de build neuf. / To bundle the Visual C++ runtime by static linking, pass that option when configuring a fresh build directory.
+
 ### Linux
 
 Commandes pour Ubuntu 24.04 x64. SDL3 fournit le backend graphique.

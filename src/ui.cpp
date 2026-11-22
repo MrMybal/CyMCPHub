@@ -8,6 +8,7 @@
 #include "skill_panel.hpp"
 #include "sdk_scan.hpp"
 #include "platform.hpp"
+#include "update_panel.hpp"
 
 #include <cyui/Core.h>
 #ifdef _WIN32
@@ -41,7 +42,7 @@ void register_translations() {
         {"Add a config file…", "Ajouter un fichier de configuration…"},
         {"Remove the extra config", "Retirer la configuration ajoutée"},
         {"Probe local TCP ports", "Rechercher sur les ports TCP locaux"},
-        {"AI setup", "Connexion IA"}, {"Refresh", "Actualiser"}, {"MCP servers", "Serveurs MCP"},
+        {"AI setup", "Connexion IA"}, {"Refresh", "Actualiser"}, {"Updates", "Mises à jour"}, {"MCP servers", "Serveurs MCP"},
         {"Connectors", "Connecteurs"}, {"Variants", "Variantes"}, {"Search SDKs", "Rechercher un SDK"},
         {"Search CLIs", "Rechercher une CLI"}, {"No file or folder selected", "Aucun fichier ou dossier sélectionné"},
         {"Copy path", "Copier le chemin"}, {"Groups", "Groupes"},
@@ -249,6 +250,7 @@ class Window {
     ActionPanel actions_{journal_};
     AssistantPanel assistant_{journal_};
     SkillPanel skills_{journal_};
+    UpdatePanel updates_;
     Json current_context_ = Json::object();
     bool active_only_ = false, include_clis_ = true, software_scanned_ = false;
     int view_ = mcp;
@@ -409,10 +411,11 @@ private:
 
     void draw_header() {
         const auto sources = trLabel("Sources"), setup = trLabel("AI setup"), reload = trLabel("Refresh");
-        const auto assistant_button = trLabel("Assistant");
+        const auto assistant_button = trLabel("Assistant"), updates = trLabel("Updates");
         const auto spacing = ImGui::GetStyle().ItemSpacing.x;
         const bool refresh_visible = view_ == mcp || view_ == sdk || view_ == cli;
         const auto width = cyui::buttonWidth(setup.c_str()) + cyui::buttonWidth(assistant_button.c_str()) + spacing +
+                           cyui::buttonWidth(updates.c_str()) + spacing +
                            (refresh_visible ? cyui::buttonWidth(reload.c_str()) + spacing : 0) +
                            (view_ == mcp ? cyui::buttonWidth(sources.c_str()) + spacing : 0);
         cyui::heading("CyMCPHub", 1);
@@ -425,6 +428,8 @@ private:
         if (cyui::button(assistant_button.c_str())) open_assistant();
         ImGui::SameLine();
         if (cyui::button(setup.c_str())) ImGui::OpenPopup("AI setup###setup");
+        ImGui::SameLine();
+        if (cyui::button(updates.c_str())) ImGui::OpenPopup("###updates");
         if (refresh_visible) {
             ImGui::SameLine();
             const cyui::ScopedDisabled scanning(pending_path_.valid() ||
@@ -441,6 +446,7 @@ private:
             (view_ == sdk || view_ == cli) && !software_scanned_)
             refresh_software();
         draw_setup();
+        updates_.draw(window_);
         cyui::divider(6);
     }
 

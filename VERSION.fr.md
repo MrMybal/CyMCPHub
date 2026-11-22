@@ -1,4 +1,8 @@
-# CyMCPHub 0.3.0
+# CyMCPHub 0.3.1
+
+- Recherche des releases GitHub stables depuis l’application.
+- Téléchargement, vérification et lancement de l’installateur de mise à jour Windows x64.
+- Installation Windows par utilisateur avec raccourci du menu Démarrer et désinstallation.
 
 - Inventaire des serveurs MCP HTTP locaux et stdio configurés, regroupés par nom de connecteur.
 - Analyse des SDK et CLI, annotations, journal et bibliothèque partagée de fichiers `SKILL.md`.

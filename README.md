@@ -12,7 +12,7 @@
     </td>
     <td width="300" align="right" valign="top">
       <p><sub>Application licence</sub><br><a href="LICENSE"><strong>GPL-3.0-only</strong></a></p>
-      <p><sub>Version</sub><br><a href="VERSION.md"><strong>0.3.0</strong></a></p>
+      <p><sub>Version</sub><br><a href="VERSION.md"><strong>0.3.1</strong></a></p>
       <p><strong>Windows x64 · Linux x64</strong><br><sub>macOS build target</sub></p>
     </td>
   </tr>
@@ -39,11 +39,13 @@ Read the [version notes](VERSION.md) for platform coverage and current limits.
 
 | Platform | Launch from the native package |
 | --- | --- |
-| Windows x64 | Open `CyMCPHub.exe`. Keep `CyMCPHubMcp.exe` beside it. The Microsoft Visual C++ x64 runtime is required. |
+| Windows x64 | Run the installer or open `CyMCPHub.exe` from a portable build. Keep `CyMCPHubMcp.exe` beside it in portable mode. Builds linked to the shared Microsoft Visual C++ runtime require the x64 redistributable. |
 | Ubuntu 24.04 x64 | Install `libcurl4t64`, then run `./CyMCPHub` beside `CyMCPHubMcp`. The tray requires an AppIndicator-compatible desktop and `libayatana-appindicator3-1`. |
 | macOS 14+ · Intel and Apple Silicon | The universal `CyMCPHub.app` target is available in the build workflow. A macOS build and desktop validation are pending. |
 
 Open [Documentation.html](Documentation/Documentation.html#/en/welcome) from the unpacked project or package in a browser. Keep the `DocData` folder alongside it. **AI setup** in the Hub generates the client configuration and enables the background HTTP service.
+
+The Windows installer installs per user and adds a Start menu shortcut. Use **Updates → Check for updates** in the app to check the latest stable GitHub release. On Windows x64, when a matching installer is available, download it and choose **Quit and install**. The Hub verifies the file size and SHA-256 supplied by GitHub before launching Setup. [Offline update guide](Documentation/Documentation.html#/en/desktop/updates).
 
 ## Connect an AI client
 

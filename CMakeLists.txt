@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 cmake_minimum_required(VERSION 3.24)
-project(CyMCPHub VERSION 0.3.0 LANGUAGES CXX)
+project(CyMCPHub VERSION 0.3.1 LANGUAGES CXX)
 
 if(NOT WIN32 AND NOT APPLE AND NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(FATAL_ERROR "CyMCPHub targets Windows, Linux and macOS.")
@@ -47,8 +47,8 @@ FetchContent_Declare(tomlplusplus GIT_REPOSITORY https://github.com/marzer/tomlp
 FetchContent_MakeAvailable(CyUI CyMCPSDK tomlplusplus)
 
 add_library(hub_catalog STATIC src/catalog.cpp src/sdk_scan.cpp src/mcp_actions.cpp src/journal.cpp
-    src/hub_service.cpp src/resident_service.cpp src/skills.cpp src/platform_common.cpp)
-target_compile_definitions(hub_catalog PRIVATE CYMCP_HUB_VERSION="${PROJECT_VERSION}")
+    src/hub_service.cpp src/resident_service.cpp src/skills.cpp src/platform_common.cpp src/updates.cpp)
+target_compile_definitions(hub_catalog PUBLIC CYMCP_HUB_VERSION="${PROJECT_VERSION}")
 target_link_libraries(hub_catalog PUBLIC CyMCP::MCP PRIVATE tomlplusplus::tomlplusplus)
 if(WIN32)
     target_sources(hub_catalog PRIVATE src/windows_inventory.cpp)
@@ -62,7 +62,8 @@ target_link_libraries(CyMCPHubMcp PRIVATE hub_catalog)
 
 set(imgui_dir "${cyui_SOURCE_DIR}/third_party/imgui")
 set(branding_dir "${CMAKE_CURRENT_SOURCE_DIR}/assets/branding")
-add_executable(CyMCPHub WIN32 MACOSX_BUNDLE src/ui.cpp src/action_panel.cpp src/assistant_panel.cpp src/skill_panel.cpp)
+add_executable(CyMCPHub WIN32 MACOSX_BUNDLE src/ui.cpp src/action_panel.cpp src/assistant_panel.cpp
+    src/skill_panel.cpp src/update_panel.cpp)
 target_link_libraries(CyMCPHub PRIVATE hub_catalog CyUI::Core CyMCP::ChatUI)
 if(WIN32)
     enable_language(RC)
@@ -156,6 +157,11 @@ install(DIRECTORY Documentation DESTINATION . COMPONENT Hub)
 
 include(CTest)
 if(BUILD_TESTING)
+    add_executable(CyMCPHubUpdateTest tests/update_check.cpp)
+    target_include_directories(CyMCPHubUpdateTest PRIVATE src)
+    target_link_libraries(CyMCPHubUpdateTest PRIVATE hub_catalog)
+    target_compile_features(CyMCPHubUpdateTest PRIVATE cxx_std_20)
+    add_test(NAME update_check COMMAND CyMCPHubUpdateTest)
     find_package(Python3 QUIET COMPONENTS Interpreter)
     if(Python3_Interpreter_FOUND)
         add_test(NAME http_compatibility COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/http_compatibility.py"

@@ -12,7 +12,7 @@
     </td>
     <td width="300" align="right" valign="top">
       <p><sub>Licence de l’application</sub><br><a href="LICENSE"><strong>GPL-3.0-only</strong></a></p>
-      <p><sub>Version</sub><br><a href="VERSION.fr.md"><strong>0.3.0</strong></a></p>
+      <p><sub>Version</sub><br><a href="VERSION.fr.md"><strong>0.3.1</strong></a></p>
       <p><strong>Windows x64 · Linux x64</strong><br><sub>Cible de compilation macOS</sub></p>
     </td>
   </tr>
@@ -39,11 +39,13 @@ Les [notes de version](VERSION.fr.md) décrivent les plateformes et les limites 
 
 | Plateforme | Lancement depuis le paquet natif |
 | --- | --- |
-| Windows x64 | Ouvrez `CyMCPHub.exe`. Gardez `CyMCPHubMcp.exe` à côté. L’environnement d’exécution Microsoft Visual C++ x64 est requis. |
+| Windows x64 | Lancez l’installateur ou ouvrez `CyMCPHub.exe` depuis une version portable. Gardez `CyMCPHubMcp.exe` à côté en mode portable. Les builds liés au runtime partagé Microsoft Visual C++ nécessitent le redistribuable x64. |
 | Ubuntu 24.04 x64 | Installez `libcurl4t64`, puis lancez `./CyMCPHub` à côté de `CyMCPHubMcp`. L’icône de notification nécessite un bureau compatible AppIndicator et le paquet `libayatana-appindicator3-1`. |
 | macOS 14+ · Intel et Apple Silicon | Le workflow de compilation prévoit une cible universelle `CyMCPHub.app`. La compilation et la validation sur un bureau macOS restent à faire. |
 
 Ouvrez [Documentation.html](Documentation/Documentation.html#/fr/welcome) dans votre navigateur depuis le projet ou le paquet extrait. Gardez le dossier `DocData` à côté. Dans le Hub, **Connexion IA** génère la configuration client et permet d’activer le service HTTP en arrière-plan.
+
+L’installateur Windows s’installe pour le compte courant et crée un raccourci dans le menu Démarrer. Dans l’app, **Mises à jour → Rechercher une mise à jour** consulte la dernière release stable sur GitHub. Sous Windows x64, si un installateur compatible est disponible, téléchargez-le puis choisissez **Quitter et installer**. Le Hub vérifie la taille et le SHA-256 fournis par GitHub avant de lancer l’installation. [Guide des mises à jour](Documentation/Documentation.html#/fr/desktop/updates).
 
 ## Connecter un client IA
 
