@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 cmake_minimum_required(VERSION 3.24)
-project(CyMCPHub VERSION 0.3.2 LANGUAGES CXX)
+project(CyMCPHub VERSION 0.3.3 LANGUAGES CXX)
 
 if(NOT WIN32 AND NOT APPLE AND NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(FATAL_ERROR "CyMCPHub targets Windows, Linux and macOS.")

@@ -1,4 +1,6 @@
-# CyMCPHub 0.3.2
+# CyMCPHub 0.3.3
+
+- L’installateur Windows coche le démarrage à l’ouverture de session par défaut lors de la première installation. Les mises à jour conservent le choix existant.
 
 - Interface revue avec une barre latérale CyUI, une page Réglages et une barre d’état.
 - Actualisation de l’inventaire en arrière-plan, port et mode d’accès HTTP configurables, et réglages de démarrage distincts pour l’application et son service MCP.

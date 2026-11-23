@@ -12,7 +12,7 @@
     </td>
     <td width="300" align="right" valign="top">
       <p><sub>Licence de l’application</sub><br><a href="LICENSE"><strong>GPL-3.0-only</strong></a></p>
-      <p><sub>Version</sub><br><a href="VERSION.fr.md"><strong>0.3.2</strong></a></p>
+      <p><sub>Version</sub><br><a href="VERSION.fr.md"><strong>0.3.3</strong></a></p>
       <p><strong>Windows x64 · Linux x64</strong><br><sub>Cible de compilation macOS</sub></p>
     </td>
   </tr>
@@ -45,7 +45,7 @@ Les [notes de version](VERSION.fr.md) décrivent les plateformes et les limites 
 
 Ouvrez [Documentation.html](Documentation/Documentation.html#/fr/welcome) dans votre navigateur depuis le projet ou le paquet extrait. Gardez le dossier `DocData` à côté. Dans le Hub, **Connexion IA** génère la configuration client et permet d’activer le service HTTP en arrière-plan.
 
-L’installateur Windows s’installe pour le compte courant et crée un raccourci dans le menu Démarrer. Dans l’app, **Mises à jour → Rechercher une mise à jour** consulte la dernière release stable sur GitHub. Sous Windows x64, si un installateur compatible est disponible, téléchargez-le puis choisissez **Quitter et installer**. Le Hub vérifie la taille et le SHA-256 fournis par GitHub avant de lancer l’installation. [Guide des mises à jour](Documentation/Documentation.html#/fr/desktop/updates).
+L’installateur Windows s’installe pour le compte courant et crée un raccourci dans le menu Démarrer. Le démarrage à l’ouverture de session est coché par défaut à la première installation. Les mises à jour respectent ce choix, modifiable dans **Réglages**. Dans l’app, **Mises à jour → Rechercher une mise à jour** consulte la dernière release stable sur GitHub. Sous Windows x64, si un installateur compatible est disponible, téléchargez-le puis choisissez **Quitter et installer**. Le Hub vérifie la taille et le SHA-256 fournis par GitHub avant de lancer l’installation. [Guide des mises à jour](Documentation/Documentation.html#/fr/desktop/updates).
 
 ## Connecter un client IA
 

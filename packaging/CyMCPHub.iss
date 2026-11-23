@@ -1,8 +1,12 @@
 ; SPDX-FileCopyrightText: 2026 Cyberalien
 ; SPDX-License-Identifier: GPL-3.0-only
 
+#define HubAppId "{{B16C9BCD-5D03-4198-9C2E-E24D29E9A5DE}"
+#define HubRunKey "Software\Microsoft\Windows\CurrentVersion\Run"
+#define HubRunValue "CyMCPHub"
+
 [Setup]
-AppId={{B16C9BCD-5D03-4198-9C2E-E24D29E9A5DE}
+AppId={#HubAppId}
 AppName=CyMCPHub
 AppVersion={#AppVersion}
 AppPublisher=Cyberalien
@@ -29,11 +33,19 @@ DisableProgramGroupPage=yes
 Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 
+[CustomMessages]
+english.StartWithWindows=Start CyMCPHub at Windows sign-in
+french.StartWithWindows=Démarrer CyMCPHub à l’ouverture de session Windows
+
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; Flags: unchecked
+Name: "startwithwindows"; Description: "{cm:StartWithWindows}"; Check: OfferWindowsStartup
 
 [Files]
 Source: "{#StagePath}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+
+[Registry]
+Root: HKCU; Subkey: "{#HubRunKey}"; ValueType: string; ValueName: "{#HubRunValue}"; ValueData: """{app}\CyMCPHub.exe"" --tray --workspace ""{%USERPROFILE}"""; Tasks: startwithwindows; Check: OfferWindowsStartup; Flags: createvalueifdoesntexist
 
 [Icons]
 Name: "{autoprograms}\CyMCPHub"; Filename: "{app}\CyMCPHub.exe"
@@ -43,6 +55,22 @@ Name: "{autodesktop}\CyMCPHub"; Filename: "{app}\CyMCPHub.exe"; Tasks: desktopic
 Filename: "{app}\CyMCPHub.exe"; Description: "{cm:LaunchProgram,CyMCPHub}"; Flags: nowait postinstall skipifsilent
 
 [Code]
+var
+  NewWindowsStartup: Boolean;
+
+function InitializeSetup: Boolean;
+begin
+  NewWindowsStartup :=
+    not RegKeyExists(HKCU, ExpandConstant('Software\Microsoft\Windows\CurrentVersion\Uninstall\{#HubAppId}_is1')) and
+    not RegValueExists(HKCU, '{#HubRunKey}', '{#HubRunValue}');
+  Result := True;
+end;
+
+function OfferWindowsStartup: Boolean;
+begin
+  Result := NewWindowsStartup;
+end;
+
 procedure CurUninstallStepChanged(Step: TUninstallStep);
 var
   Command, ProgramPath: String;
@@ -50,8 +78,8 @@ begin
   if Step = usPostUninstall then
   begin
     ProgramPath := Lowercase(ExpandConstant('"{app}\CyMCPHub.exe"'));
-    if RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run', 'CyMCPHub', Command) and
+    if RegQueryStringValue(HKCU, '{#HubRunKey}', '{#HubRunValue}', Command) and
        (Pos(ProgramPath, Lowercase(Command)) = 1) then
-      RegDeleteValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run', 'CyMCPHub');
+      RegDeleteValue(HKCU, '{#HubRunKey}', '{#HubRunValue}');
   end;
 end;

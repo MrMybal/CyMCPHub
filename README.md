@@ -12,7 +12,7 @@
     </td>
     <td width="300" align="right" valign="top">
       <p><sub>Application licence</sub><br><a href="LICENSE"><strong>GPL-3.0-only</strong></a></p>
-      <p><sub>Version</sub><br><a href="VERSION.md"><strong>0.3.2</strong></a></p>
+      <p><sub>Version</sub><br><a href="VERSION.md"><strong>0.3.3</strong></a></p>
       <p><strong>Windows x64 · Linux x64</strong><br><sub>macOS build target</sub></p>
     </td>
   </tr>
@@ -45,7 +45,7 @@ Read the [version notes](VERSION.md) for platform coverage and current limits.
 
 Open [Documentation.html](Documentation/Documentation.html#/en/welcome) from the unpacked project or package in a browser. Keep the `DocData` folder alongside it. **AI setup** in the Hub generates the client configuration and enables the background HTTP service.
 
-The Windows installer installs per user and adds a Start menu shortcut. Use **Updates → Check for updates** in the app to check the latest stable GitHub release. On Windows x64, when a matching installer is available, download it and choose **Quit and install**. The Hub verifies the file size and SHA-256 supplied by GitHub before launching Setup. [Offline update guide](Documentation/Documentation.html#/en/desktop/updates).
+The Windows installer installs per user and adds a Start menu shortcut. Startup at sign-in is selected by default on a first install. Upgrades respect your choice, which you can change in **Settings**. Use **Updates → Check for updates** in the app to check the latest stable GitHub release. On Windows x64, when a matching installer is available, download it and choose **Quit and install**. The Hub verifies the file size and SHA-256 supplied by GitHub before launching Setup. [Offline update guide](Documentation/Documentation.html#/en/desktop/updates).
 
 ## Connect an AI client
 

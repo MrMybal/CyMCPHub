@@ -1,4 +1,6 @@
-# CyMCPHub 0.3.2
+# CyMCPHub 0.3.3
+
+- The Windows installer selects startup at sign-in by default on a first install. Upgrades preserve the existing choice.
 
 - Redesigned desktop interface with CyUI sidebar navigation, a dedicated settings page and a status bar.
 - Configurable inventory refresh in the background, HTTP port and access mode, and separate startup options for the app and the MCP service.
