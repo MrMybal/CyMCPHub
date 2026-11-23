@@ -1,4 +1,9 @@
-# CyMCPHub 0.3.1
+# CyMCPHub 0.3.2
+
+- Interface revue avec une barre latérale CyUI, une page Réglages et une barre d’état.
+- Actualisation de l’inventaire en arrière-plan, port et mode d’accès HTTP configurables, et réglages de démarrage distincts pour l’application et son service MCP.
+- Journal avec recherche et filtre des problèmes, dont les refus d’authentification pendant la découverte des MCP.
+- Aperçu Markdown des Skills collectés et filtre des connecteurs à vérifier dans l’inventaire.
 
 - Recherche des releases GitHub stables depuis l’application.
 - Téléchargement, vérification et lancement de l’installateur de mise à jour Windows x64.

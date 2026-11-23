@@ -12,7 +12,7 @@
     </td>
     <td width="300" align="right" valign="top">
       <p><sub>Licence de l’application</sub><br><a href="LICENSE"><strong>GPL-3.0-only</strong></a></p>
-      <p><sub>Version</sub><br><a href="VERSION.fr.md"><strong>0.3.1</strong></a></p>
+      <p><sub>Version</sub><br><a href="VERSION.fr.md"><strong>0.3.2</strong></a></p>
       <p><strong>Windows x64 · Linux x64</strong><br><sub>Cible de compilation macOS</sub></p>
     </td>
   </tr>

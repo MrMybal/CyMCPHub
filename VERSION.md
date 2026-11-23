@@ -1,4 +1,9 @@
-# CyMCPHub 0.3.1
+# CyMCPHub 0.3.2
+
+- Redesigned desktop interface with CyUI sidebar navigation, a dedicated settings page and a status bar.
+- Configurable inventory refresh in the background, HTTP port and access mode, and separate startup options for the app and the MCP service.
+- Searchable journal with a problem filter and authentication refusals during MCP discovery.
+- Markdown previews for collected skills and an inventory filter for connectors that need attention.
 
 - Check stable GitHub releases from the app.
 - Download, verify and start the Windows x64 update installer from the app.
