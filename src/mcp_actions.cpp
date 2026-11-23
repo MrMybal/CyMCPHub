@@ -23,7 +23,9 @@ void McpActions::record_http() noexcept {
 
 Json McpActions::request(const char* operation, const cymcp::Cancellation& input, std::chrono::seconds timeout,
                          const std::function<Json(cymcp::McpClient&, const cymcp::Cancellation&)>& action) {
-    std::lock_guard lock(mutex_);
+    // Another call may hold this connector for minutes: keep honouring cancellation while waiting.
+    std::unique_lock lock(mutex_, std::defer_lock);
+    while (!lock.try_lock_for(std::chrono::milliseconds(50))) input.check();
     input.check();
     const char* phase = "connect";
     auto started = cymcp::Clock::now();

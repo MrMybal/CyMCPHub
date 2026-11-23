@@ -15,19 +15,8 @@
 
 namespace hub {
 namespace {
-constexpr int service_port = 48786;
 #ifdef _WIN32
 constexpr wchar_t registry_path[] = L"Software\\CyberAlien\\CyMCPHub";
-
-bool enabled() {
-    DWORD value = 0, size = sizeof(value);
-    return RegGetValueW(HKEY_CURRENT_USER, registry_path, L"McpEnabled", RRF_RT_REG_DWORD, nullptr, &value, &size) == ERROR_SUCCESS && value;
-}
-
-void set_enabled(DWORD value) {
-    if (RegSetKeyValueW(HKEY_CURRENT_USER, registry_path, L"McpEnabled", REG_DWORD, &value, sizeof(value)) != ERROR_SUCCESS)
-        throw std::runtime_error("Cannot save MCP service settings");
-}
 
 std::string read_token() {
     DWORD size = 0;
@@ -56,23 +45,6 @@ void save_token(std::string& token) {
 #else
 fs::path service_directory() { return data_path() / "mcp-service"; }
 
-bool enabled() {
-    std::error_code error;
-    return fs::is_regular_file(service_directory() / "enabled", error);
-}
-
-void set_enabled(bool value) {
-    const auto path = service_directory() / "enabled";
-    if (value) {
-        auto file = cymcp::open_private_output_file(path);
-        if (!file) throw std::runtime_error("Cannot save MCP service settings");
-    } else {
-        std::error_code error;
-        fs::remove(path, error);
-        if (error) throw std::runtime_error("Cannot save MCP service settings");
-    }
-}
-
 std::string read_token() {
     const int file = open((service_directory() / "token").c_str(), O_RDONLY | O_NOFOLLOW | O_CLOEXEC | O_NONBLOCK);
     if (file < 0) return {};
@@ -96,70 +68,74 @@ void save_token(std::string& token) {
 #endif
 } // namespace
 
-HubHttpServer::HubHttpServer(Options options, std::shared_ptr<Journal> journal, const std::string& token)
-    : tools_(make_hub_registry(std::move(options), std::move(journal))), mcp_(*tools_, "CyMCPHub"),
-      http_(token, [this](const Json& request, const cymcp::CallContext& context) {
-          return mcp_.handle(request, context);
-      }) {}
+HubHttpServer::HubHttpServer(Options options, std::shared_ptr<Journal> journal, const std::string& token,
+                             bool require_token)
+    : tools_(make_hub_registry(std::move(options), std::move(journal))), mcp_(*tools_, "CyMCPHub") {
+    const auto dispatch = [this](const Json& request, const cymcp::CallContext& context) {
+        return mcp_.handle(request, context);
+    };
+    if (require_token)
+        http_ = std::make_unique<cymcp::LocalHttpServer>(token, dispatch);
+    else
+        http_ = std::make_unique<cymcp::LocalHttpServer>(cymcp::LocalHttpServer::UnauthenticatedLoopback{}, dispatch);
+}
 
 HubHttpServer::~HubHttpServer() {
     mcp_.cancel_all();
-    http_.stop();
+    http_->stop();
 }
 
-int HubHttpServer::start(int port) { return http_.start(port); }
+int HubHttpServer::start(int port) { return http_->start(port); }
 
-void ResidentService::start(const Options& options, bool persist) {
-    auto token = read_token();
-    if (token.size() < 32) {
-        token = cymcp::random_token();
-        save_token(token);
+void ResidentService::start(const Options& options, const McpServiceSettings& settings) {
+    std::string token;
+    if (settings.require_token) {
+        token = read_token();
+        if (token.size() < 32) {
+            token = cymcp::random_token();
+            save_token(token);
+        }
     }
-    auto server = std::make_unique<HubHttpServer>(options, journal_, token);
-    const auto port = server->start(service_port);
-    if (persist) set_enabled(1);
+    auto server = std::make_unique<HubHttpServer>(options, journal_, token, settings.require_token);
+    const auto port = server->start(settings.port);
     token_ = std::move(token);
     options_ = options;
+    settings_ = settings;
+    settings_.port = port;
     server_ = std::move(server);
     error_.clear();
-    journal_->add("CyMCPHub", "mcp/service", "OK", "127.0.0.1:" + std::to_string(port));
+    journal_->add("CyMCPHub", "mcp/service", "OK", mcp_service_url(port));
 }
 
 void ResidentService::stop() {
-    set_enabled(0);
     server_.reset();
     token_.clear();
     error_.clear();
     journal_->add("CyMCPHub", "mcp/service", "Stopped");
 }
 
-void ResidentService::restore(const Options& options) {
-    try { if (enabled()) start(options, false); }
-    catch (const std::exception& error) {
-        error_ = cymcp::redact_error_message(error.what());
-        journal_->add("CyMCPHub", "mcp/service", "Error", error_);
-    }
-}
-
-void ResidentService::toggle(const Options& options) {
+void ResidentService::set_running(bool enabled, const Options& options, const McpServiceSettings& settings) {
+    if (running() == enabled) return;
     try {
-        if (running()) stop();
-        else start(options, true);
+        if (enabled) start(options, settings);
+        else stop();
     } catch (const std::exception& error) {
         error_ = cymcp::redact_error_message(error.what());
         journal_->add("CyMCPHub", "mcp/service", "Error", error_);
     }
 }
 
-void ResidentService::sync_options(const Options& options) {
+void ResidentService::sync_options(const Options& options, const McpServiceSettings& settings) {
     if (!running() || (options.workspace == options_.workspace && options.extra_config == options_.extra_config &&
-                       options.scan_ports == options_.scan_ports)) return;
-    server_.reset();
-    restore(options);
+                       options.scan_ports == options_.scan_ports && settings.port == settings_.port &&
+                       settings.require_token == settings_.require_token)) return;
+    stop();
+    set_running(true, options, settings);
 }
 
 Json ResidentService::configuration() const {
-    return {{"mcpServers", {{"cymcphub", {{"type", "http"}, {"url", "http://127.0.0.1:" + std::to_string(service_port) + "/mcp"},
-                {"headers", {{"Authorization", "Bearer " + token_}}}}}}}};
+    Json connector = {{"type", "http"}, {"url", mcp_service_url(settings_.port)}};
+    if (settings_.require_token && !token_.empty()) connector["headers"] = {{"Authorization", "Bearer " + token_}};
+    return {{"mcpServers", {{"cymcphub", std::move(connector)}}}};
 }
 } // namespace hub

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "catalog.hpp"
+#include "journal.hpp"
 #include "mcp_actions.hpp"
 #include "platform.hpp"
 
@@ -19,6 +20,7 @@ namespace {
 struct Entry {
     Server server;
     std::string url, command;
+    std::string listener_name;
     std::vector<std::string> args;
     Json configuration;
 };
@@ -126,7 +128,7 @@ Json public_arguments(const std::vector<std::string>& args) {
             safe.push_back(start == std::string::npos ? "<redacted>" :
                            arg.substr(0, start + 1) + public_url(arg.substr(start + 1)));
         } else {
-            safe.push_back(arg);
+            safe.push_back(cymcp::redact_error_message(arg));
         }
     }
     return safe;
@@ -313,6 +315,7 @@ bool command_matches(const Entry& entry, const Process& process) {
     return true;
 }
 
+#ifndef CYMCP_HAS_LOCAL_DISCOVERY
 Json rpc_result(const std::string& body) {
     auto extract = [](const std::string& payload) -> Json {
         const auto message = Json::parse(payload, nullptr, false);
@@ -334,15 +337,49 @@ Json rpc_result(const std::string& body) {
     }
     return nullptr;
 }
+#endif
 
-void verify_http(Entry& entry, const cymcp::Cancellation& cancellation) {
+void record_http_refusal(const Entry& entry, const cymcp::Url& address, Journal* journal,
+                         cymcp::Clock::time_point started, int status = 0) {
+    if (!journal) return;
+    const auto host = address.host.find(':') == std::string::npos ? address.host : '[' + address.host + ']';
+    auto endpoint = address.scheme + "://" + host + ':' + std::to_string(address.port);
+    if (address.target == "/mcp") endpoint += "/mcp";
+    const auto elapsed = std::chrono::duration<double, std::milli>(cymcp::Clock::now() - started).count();
+    journal->add(entry.server.name.empty() ? entry.server.source : entry.server.name, "inventory/initialize",
+                 status ? "HTTP " + std::to_string(status) : "Access denied", endpoint, elapsed);
+}
+
+void verify_http(Entry& entry, const cymcp::Cancellation& cancellation, Journal* journal) {
     if (entry.server.status == Status::disabled || entry.server.transport != "http") return;
+    cymcp::Url address;
     try {
-        if (!cymcp::parse_url(entry.url).loopback) return;
+        address = cymcp::parse_url(entry.url);
+        if (!address.loopback) return;
     } catch (const cymcp::Error&) {
         return;
     }
-
+    const auto started = cymcp::Clock::now();
+#ifdef CYMCP_HAS_LOCAL_DISCOVERY
+    using cymcp::LocalMcpStatus;
+    auto& server = entry.server;
+    const auto result = cymcp::probe_local_mcp(entry.url, cancellation,
+        std::chrono::milliseconds(server.source_file.empty() ? 800 : 1800));
+    server.status = Status::unverified;
+    if (result.status == LocalMcpStatus::unverified) return;
+    server.status = result.status == LocalMcpStatus::active ? Status::verified : Status::authentication;
+    if (!result.name.empty()) server.server_name = result.name;
+    if (server.server_name.empty() && result.advertised) {
+        server.server_name = entry.listener_name;
+        if (server.server_name.empty())
+            server.server_name = "MCP " + std::to_string(address.port);
+    }
+    if (server.source_file.empty() && !server.server_name.empty()) server.name = server.server_name;
+    server.version = result.version;
+    server.protocol = result.protocol;
+    server.summary = cymcp::redact_error_message(result.summary);
+    if (server.status == Status::authentication) record_http_refusal(entry, address, journal, started);
+#else
     auto& server = entry.server;
     server.status = Status::unverified;
     cymcp::HttpRequest request;
@@ -365,7 +402,10 @@ void verify_http(Entry& entry, const cymcp::Cancellation& cancellation) {
                 result = rpc_result(received);
             return !result.is_object();
         });
-        if (response.status == 401 || response.status == 403) server.status = Status::authentication;
+        if (response.status == 401 || response.status == 403) {
+            server.status = Status::authentication;
+            record_http_refusal(entry, address, journal, started, response.status);
+        }
         if (response.status < 200 || response.status >= 300) return;
         result = rpc_result(received);
         if (const auto found = response.headers.find("mcp-session-id"); found != response.headers.end()) session = found->second;
@@ -393,12 +433,16 @@ void verify_http(Entry& entry, const cymcp::Cancellation& cancellation) {
         try { (void)cymcp::HttpClient().perform(request, cancellation); }
         catch (const cymcp::Error&) {}
     }
+#endif
 }
 
 std::string endpoint_key(const std::string& url) {
     try {
         const auto parsed = cymcp::parse_url(url);
-        const auto host = parsed.host == "localhost" ? "127.0.0.1" : parsed.host;
+        const auto& name = parsed.host;
+        const bool loopback = name == "localhost" || name == "127.0.0.1" || name == "::1" || name == "[::1]" ||
+                              name == "0.0.0.0" || name == "::" || name == "[::]";
+        const auto host = loopback ? std::string("loopback") : name;
         return parsed.scheme + '|' + host + '|' + std::to_string(parsed.port) + '|' + parsed.target;
     } catch (const cymcp::Error&) { return url; }
 }
@@ -540,7 +584,9 @@ const char* status_key(Status status) {
     return "configured";
 }
 
-bool is_active(Status status) { return status == Status::verified || status == Status::process_seen; }
+bool is_active(Status status) {
+    return status == Status::verified || status == Status::process_seen || status == Status::authentication;
+}
 
 Json Server::to_json(bool details) const {
     Json data = {{"id", id}, {"name", name}, {"groupKey", group_key(name)}, {"source", source}, {"transport", transport},
@@ -565,7 +611,7 @@ bool matches(const Server& server, std::string_view query) {
            lower(server.source).find(needle) != std::string::npos || server.transport.find(needle) != std::string::npos;
 }
 
-Snapshot scan(const Options& options, const cymcp::Cancellation& cancellation) {
+Snapshot scan(const Options& options, const cymcp::Cancellation& cancellation, Journal* journal) {
     Snapshot snapshot;
     auto entries = configured_entries(options, snapshot);
     const auto processes = running_processes(cancellation, snapshot.processes_available);
@@ -584,7 +630,14 @@ Snapshot scan(const Options& options, const cymcp::Cancellation& cancellation) {
         std::set<std::string> declared;
         for (const auto& entry : entries)
             if (!entry.url.empty() && entry.server.status != Status::disabled) declared.insert(endpoint_key(entry.url));
-        for (const auto& listener : local_listeners(snapshot.ports_available)) {
+#if defined(CYMCP_HAS_LOCAL_DISCOVERY) && defined(_WIN32)
+        const auto listeners = cymcp::windows_mcp_listeners(snapshot.ports_available);
+#else
+        const auto listeners = local_listeners(snapshot.ports_available);
+#endif
+        const auto self = process_id();
+        for (const auto& listener : listeners) {
+            if (listener.pid == self) continue;
             if (!declared.insert(endpoint_key(listener.url)).second) continue;
             Entry entry;
             entry.url = listener.url;
@@ -593,7 +646,16 @@ Snapshot scan(const Options& options, const cymcp::Cancellation& cancellation) {
             entry.server.transport = "http";
             entry.server.pid = listener.pid;
             entry.server.connection = {{"url", listener.url}};
+            // CyModelHub 0.1.2 and earlier answer the challenge before publishing identity.
+            const auto owner = std::find_if(processes.begin(), processes.end(), [&](const Process& process) {
+                return process.pid == listener.pid && !process.arguments.empty();
+            });
+            if (owner != processes.end())
+                entry.listener_name = cymcp::path_utf8(from_utf8(owner->arguments.front()).stem());
+            if (lower(entry.listener_name) == "cymodelhubservice")
+                entry.server.name = entry.server.server_name = "CyModelHub";
             entries.push_back(std::move(entry));
+            ++snapshot.tcp_candidates;
         }
     }
     {
@@ -604,17 +666,22 @@ Snapshot scan(const Options& options, const cymcp::Cancellation& cancellation) {
                 while (!cancellation.cancelled() && cymcp::Clock::now() < cancellation.deadline) {
                     const auto index = next.fetch_add(1);
                     if (index >= entries.size()) break;
-                    verify_http(entries[index], cancellation);
+                    verify_http(entries[index], cancellation, journal);
                 }
             });
         }
     }
     cancellation.check();
-    const auto notes = read_notes();
+    Json notes = Json::object();
+    try { notes = read_notes(); }
+    catch (const std::exception& error) {
+        if (journal) journal->add("CyMCPHub", "annotations/read", "Error", error.what());
+    }
     std::set<std::string> seen;
     for (auto& entry : entries) {
         auto& server = entry.server;
-        if (server.source_file.empty() && server.status != Status::verified) continue;
+        if (server.source_file.empty() && server.status != Status::verified &&
+            (server.status != Status::authentication || server.server_name.empty())) continue;
         if (!seen.insert(server.id).second) continue;
         server.note = field(notes, server.id.c_str());
         snapshot.servers.push_back(std::move(server));

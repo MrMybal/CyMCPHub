@@ -28,6 +28,15 @@ class Connector(BaseHTTPRequestHandler):
         assert self.headers.get('Authorization') is None
         request = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
         method = request['method']
+        refusal = {'/token-required': 401, '/forbidden': 403}.get(self.path.split('?', 1)[0])
+        if refusal:
+            assert method == 'initialize'
+            self.send_response(refusal)
+            if refusal == 401:
+                self.send_header('WWW-Authenticate', 'Bearer')
+            self.end_headers()
+            self.wfile.write(b'fixture-private-response')
+            return
         response = {'jsonrpc': '2.0', 'id': request.get('id')}
         status = 200
         protocol = '2025-03-26' if self.path == '/old-peer' else '2025-11-25'
@@ -67,8 +76,13 @@ class Connector(BaseHTTPRequestHandler):
 
 def check(executable, root, port):
     settings = root / 'mcp.json'
-    settings.write_text(json.dumps({'servers': {name: {'url': f'http://127.0.0.1:{port}/{name}'}
-                                                for name in ('old-peer', 'current-peer')}}), encoding='utf-8')
+    origin = f'http://127.0.0.1:{port}'
+    settings.write_text(json.dumps({'servers': {
+        'old-peer': {'url': origin + '/old-peer'},
+        'current-peer': {'url': origin + '/current-peer'},
+        'token-required': {'url': origin + '/token-required?access_token=fixture-private-query'},
+        'forbidden': {'url': origin + '/forbidden'},
+    }}), encoding='utf-8')
     (root / 'SKILL.md').write_text('---\nname: local-test\ndescription: Identify the local test SDK.\n---\n\nRead the SDK catalogue.\n', encoding='utf-8')
     environment = dict(os.environ, HOME=str(root), USERPROFILE=str(root), APPDATA=str(root), LOCALAPPDATA=str(root),
                        XDG_CONFIG_HOME=str(root / 'config'), XDG_DATA_HOME=str(root / 'xdg-data'),
@@ -101,6 +115,11 @@ def check(executable, root, port):
         assert any(entry['operation'] == 'server/discover' and entry['status'] == 'HTTP 400' for entry in entries)
         assert any(entry['operation'] == 'notifications/initialized' and entry['status'] == 'HTTP 204' for entry in entries)
         assert len([entry for entry in entries if entry['operation'] == 'tools/list' and entry['status'] == 'HTTP 200']) == 2
+        refusals = {entry['source']: entry for entry in entries if entry['operation'] == 'inventory/initialize'}
+        assert refusals['token-required']['status'] in ('HTTP 401', 'Access denied'), refusals
+        assert refusals['forbidden']['status'] in ('HTTP 403', 'Access denied'), refusals
+        assert all(entry['detail'] == origin for entry in refusals.values()), refusals
+        assert 'fixture-private-' not in log, log
         catalogue = send('tools/call', {'name': 'mcp_catalog', 'arguments': {'id': connectors['old-peer'],
                          'format': 'markdown', 'query': 'check'}}, 5)['structuredContent']
         assert catalogue['applications'][0]['summary'] == 'Search the test database.'
@@ -129,4 +148,4 @@ if __name__ == '__main__':
         finally:
             server.shutdown()
             worker.join()
-    print('Verified HTTP compatibility, journal, Markdown catalogue, local and MCP skill collection, and skill creation.')
+    print('Verified HTTP compatibility, inventory refusals in the journal, Markdown catalogue, and skill operations.')

@@ -20,6 +20,7 @@ public:
     void add(std::string_view source, std::string_view operation, std::string_view status,
              std::string_view detail = {}, double elapsed_ms = 0) noexcept;
     std::vector<JournalEntry> entries() const;
+    void clear() noexcept;
     std::string json_lines() const;
 };
 } // namespace hub

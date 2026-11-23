@@ -49,6 +49,8 @@ The Windows installer installs per user and adds a Start menu shortcut. Use **Up
 
 ## Connect an AI client
 
+Use the **Settings** page in the sidebar to choose inventory sources, set the refresh interval, and copy AI client configuration. The MCP inventory refreshes every minute by default, including when the window is hidden in the tray. The local HTTP service has a configurable port and supports token-protected or free local access. The service's **Start with the app** option and **Start at login** are independent.
+
 1. In **Sources**, select the project and add its MCP configuration if needed.
 2. Open **AI setup**. Choose **stdio** to let your client launch the Hub's MCP server, or enable **MCP service (HTTP)** to use the running desktop Hub.
 3. Copy the configuration into your client. Call `mcp_list` to find a connector ID, then call `mcp_tools` with that ID to see the tool schemas. Use `mcp_catalog` with `format: "markdown"` for a summary across applications.

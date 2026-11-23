@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "action_panel.hpp"
+#include "ui_kit.hpp"
 
 #include <cyui/Core.h>
 #include <algorithm>
@@ -26,8 +27,7 @@ void show_json(const char* id, const std::string& json, float height) {
         while (!preview.empty() && (static_cast<unsigned char>(json[preview.size()]) & 0xc0) == 0x80) preview.pop_back();
         preview += "\n…";
     }
-    const cyui::ScopedFont font(cyui::monoFont());
-    ImGui::InputTextMultiline(id, preview.data(), preview.size() + 1, ImVec2(-1, cyui::dp(height)), ImGuiInputTextFlags_ReadOnly);
+    kit::code_box(id, preview, height);
 }
 } // namespace
 
@@ -114,40 +114,41 @@ void ActionPanel::start(State& state, const Server& server, const Options& optio
 }
 
 void ActionPanel::draw(const Server& server, const Options& options, bool resources) {
+    namespace icon = cyui::icon;
     auto& state = states_[server.id];
     poll(state);
-    cyui::space(4);
     {
         const cyui::ScopedDisabled disabled(state.pending.valid() || server.status == Status::disabled);
-        if (cyui::button(trLabel(resources ? "Load resources" : "Load tools").c_str()))
-            start(state, server, options, resources ? Operation::resources : Operation::tools);
+        const auto load = kit::with_icon(icon::download, trLabel(resources ? "Load resources" : "Load tools"));
+        if (cyui::button(load.c_str())) start(state, server, options, resources ? Operation::resources : Operation::tools);
         if (state.session) {
             ImGui::SameLine();
-            if (cyui::ghostButton(trLabel("Disconnect").c_str())) start(state, server, options, Operation::disconnect);
+            if (cyui::ghostButton(kit::with_icon(icon::close, trLabel("Disconnect")).c_str())) start(state, server, options, Operation::disconnect);
         }
     }
     if (state.pending.valid()) {
-        ImGui::SameLine();
-        if (cyui::ghostButton(trLabel("Cancel").c_str())) state.cancellation.cancel();
-        cyui::spinner("##mcp-request", 5);
+        ImGui::SameLine(0, cyui::dp(14));
+        ImGui::AlignTextToFramePadding();
+        cyui::spinner("##mcp-request", ImGui::GetFontSize() * 0.32f);
         ImGui::SameLine();
         cyui::textDim("%s", tr("Waiting for the MCP server…").c_str());
+        ImGui::SameLine();
+        if (cyui::ghostButton(trLabel("Cancel").c_str())) state.cancellation.cancel();
     } else if (!state.session && server.transport == "stdio" && server.status != Status::disabled) {
-        cyui::textDim("%s", tr("A stdio connection starts a dedicated process.").c_str());
+        ImGui::SameLine(0, cyui::dp(14));
+        ImGui::AlignTextToFramePadding();
+        cyui::textFaint("%s", tr("A stdio connection starts a dedicated process.").c_str());
     }
+    cyui::space(4);
     if (!state.error.empty()) cyui::callout(cyui::Tone::warning, state.error.c_str());
     if (resources) draw_resources(state, server, options);
     else draw_tools(state, server, options);
 
     if (state.resources_result == resources && !state.result.empty()) {
-        cyui::space(5);
-        cyui::sectionTitle(tr("Result").c_str());
-        cyui::textDim("%s", state.result_name.c_str());
-        show_json("##mcp-result", state.result, 145);
-        if (cyui::button(trLabel("Copy JSON").c_str())) {
-            ImGui::SetClipboardText(state.result.c_str());
-            cyui::notify(tr("Copied").c_str(), cyui::Tone::success);
-        }
+        cyui::space(8);
+        if (kit::section_header((tr("Result") + "  ·  " + state.result_name).c_str(), icon::copy, tr("Copy JSON").c_str()))
+            kit::copy_to_clipboard(state.result);
+        show_json("##mcp-result", state.result, 180);
     }
 }
 
@@ -177,17 +178,20 @@ void ActionPanel::draw_tools(State& state, const Server& server, const Options& 
     const auto& tool = state.tools[state.tool_index];
     const auto name = text_field(tool, "name");
     const auto description = text_field(tool, "description");
-    if (!description.empty()) ImGui::TextWrapped("%s", description.c_str());
+    if (!description.empty()) kit::wrapped_dim(description);
+    cyui::space(2);
     if (ImGui::TreeNode(trLabel("Input schema").c_str())) {
-        show_json("##mcp-schema", tool.value("inputSchema", Json::object()).dump(2), 120);
+        show_json("##mcp-schema", tool.value("inputSchema", Json::object()).dump(2), 130);
         ImGui::TreePop();
     }
+    cyui::space(4);
     cyui::sectionTitle(tr("Arguments (JSON)").c_str());
     {
         const cyui::ScopedFont font(cyui::monoFont());
-        ImGui::InputTextMultiline("##mcp-arguments", state.arguments.data(), state.arguments.size(), ImVec2(-1, cyui::dp(100)));
+        const cyui::ScopedColor well(ImGuiCol_FrameBg, cyui::palette().bg0);
+        ImGui::InputTextMultiline("##mcp-arguments", state.arguments.data(), state.arguments.size(), ImVec2(-FLT_MIN, cyui::dp(110)));
     }
-    if (cyui::primaryButton(trLabel("Run tool").c_str())) {
+    if (cyui::primaryButton(kit::with_icon(cyui::icon::play, trLabel("Run tool")).c_str())) {
         auto parameters = Json::parse(state.arguments.data(), nullptr, false);
         if (parameters.is_object()) start(state, server, options, Operation::call, name, std::move(parameters));
         else state.error = tr("Arguments must be a valid JSON object.");
@@ -217,6 +221,6 @@ void ActionPanel::draw_resources(State& state, const Server& server, const Optio
     ImGui::SetNextItemWidth(-FLT_MIN);
     if (ImGui::InputTextWithHint("##mcp-uri", tr("Resource URI").c_str(), buffer.data(), buffer.size())) state.uri = buffer.data();
     const cyui::ScopedDisabled empty(state.uri.empty());
-    if (cyui::primaryButton(trLabel("Read resource").c_str())) start(state, server, options, Operation::read, state.uri);
+    if (cyui::primaryButton(kit::with_icon(cyui::icon::view, trLabel("Read resource")).c_str())) start(state, server, options, Operation::read, state.uri);
 }
 } // namespace hub

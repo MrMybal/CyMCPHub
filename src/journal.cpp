@@ -22,6 +22,11 @@ std::vector<JournalEntry> Journal::entries() const {
     return {entries_.begin(), entries_.end()};
 }
 
+void Journal::clear() noexcept {
+    std::lock_guard lock(mutex_);
+    entries_.clear();
+}
+
 std::string Journal::json_lines() const {
     std::string output;
     for (const auto& entry : entries()) {

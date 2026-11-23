@@ -15,7 +15,7 @@ std::unique_ptr<cymcp::McpClient> make_mcp_client(const Server& server, const Op
 class McpActions {
     Server server_;
     Options options_;
-    std::mutex mutex_;
+    std::timed_mutex mutex_;
     std::unique_ptr<cymcp::McpClient> client_;
     std::shared_ptr<Journal> journal_;
     std::shared_ptr<cymcp::PerformanceMonitor> performance_;

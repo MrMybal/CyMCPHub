@@ -3,6 +3,7 @@
 
 #include "ui.hpp"
 #include "app_icon_resource.h"
+#include "autostart.hpp"
 
 #include <cyui/Core.h>
 #include <d3d11.h>
@@ -55,10 +56,9 @@ UINT pending_width = 0, pending_height = 0;
 float pending_dpi = 0;
 constexpr UINT tray_message = WM_APP + 1, restore_message = WM_APP + 2, assistant_message = WM_APP + 3;
 constexpr wchar_t window_class_name[] = L"CyMCPHubWindow";
-constexpr wchar_t run_key[] = L"Software\\Microsoft\\Windows\\CurrentVersion\\Run";
 UINT taskbar_created = 0;
 bool tray_installed = false;
-std::wstring startup_command;
+hub::Options startup_options;
 void (*create_platform_window)(ImGuiViewport*) = nullptr;
 
 HICON application_icon(bool small_icon) {
@@ -94,46 +94,9 @@ bool update_tray(HWND window, DWORD action) {
     return Shell_NotifyIconW(action, &icon) != FALSE;
 }
 
-bool startup_enabled() {
-    DWORD length = 0;
-    return RegGetValueW(HKEY_CURRENT_USER, run_key, L"CyMCPHub", RRF_RT_REG_SZ, nullptr, nullptr, &length) == ERROR_SUCCESS;
-}
-
-bool set_startup(bool enabled) {
-    HKEY key = nullptr;
-    if (enabled) {
-        if (startup_command.empty() || startup_command.size() >= 260 ||
-            RegCreateKeyExW(HKEY_CURRENT_USER, run_key, 0, nullptr, 0, KEY_SET_VALUE, nullptr, &key, nullptr) != ERROR_SUCCESS)
-            return false;
-    } else if (RegOpenKeyExW(HKEY_CURRENT_USER, run_key, 0, KEY_SET_VALUE, &key) != ERROR_SUCCESS) {
-        return false;
-    }
-    const auto status = enabled ? RegSetValueExW(key, L"CyMCPHub", 0, REG_SZ, reinterpret_cast<const BYTE*>(startup_command.c_str()),
-                              static_cast<DWORD>((startup_command.size() + 1) * sizeof(wchar_t))) : RegDeleteValueW(key, L"CyMCPHub");
-    RegCloseKey(key);
-    return status == ERROR_SUCCESS || status == ERROR_FILE_NOT_FOUND;
-}
-
-std::wstring quote_path(const hub::fs::path& path) {
-    auto text = path.native();
-    const auto last_character = text.find_last_not_of(L'\\');
-    if (last_character != std::wstring::npos) text.append(text.size() - 1 - last_character, L'\\');
-    return L'"' + text + L'"';
-}
-
-void prepare_startup(const hub::Options& options) {
-    std::wstring executable(32768, L'\0');
-    const auto length = GetModuleFileNameW(nullptr, executable.data(), static_cast<DWORD>(executable.size()));
-    if (!length || length >= executable.size()) return;
-    executable.resize(length);
-    startup_command = quote_path(executable) + L" --tray --workspace " + quote_path(options.workspace);
-    if (!options.extra_config.empty()) startup_command += L" --config " + quote_path(options.extra_config);
-    if (!options.scan_ports) startup_command += L" --no-port-scan";
-}
-
 void tray_menu(HWND window) {
     const bool french = PRIMARYLANGID(LANGIDFROMLCID(GetUserDefaultLCID())) == LANG_FRENCH;
-    const bool startup = startup_enabled();
+    const bool startup = hub::autostart_enabled();
     const auto menu = CreatePopupMenu();
     if (!menu) return;
     AppendMenuW(menu, MF_STRING, 1, french ? L"Ouvrir CyMCPHub" : L"Open CyMCPHub");
@@ -150,9 +113,13 @@ void tray_menu(HWND window) {
     PostMessageW(window, WM_NULL, 0, 0);
     if (command == 1) show_window(window);
     else if (command == 4) PostMessageW(window, assistant_message, 0, 0);
-    else if (command == 2 && !set_startup(!startup))
-        MessageBoxW(window, french ? L"Impossible de modifier le démarrage automatique." : L"Could not change automatic startup.",
-                    L"CyMCPHub", MB_OK | MB_ICONWARNING);
+    else if (command == 2) {
+        try { hub::set_autostart(!startup, startup_options); }
+        catch (const std::exception&) {
+            MessageBoxW(window, french ? L"Impossible de modifier le démarrage automatique." : L"Could not change automatic startup.",
+                        L"CyMCPHub", MB_OK | MB_ICONWARNING);
+        }
+    }
     else if (command == 3) DestroyWindow(window);
 }
 
@@ -232,13 +199,15 @@ void run_window(HWND window, Options options) {
     if (create_platform_window) platform.Platform_CreateWindow = create_branded_platform_window;
 
     bool occluded = false;
-    draw_hub(window, std::move(options), [&](const Draw& draw, const Draw& draw_assistant, bool& assistant_open, bool&) {
+    draw_hub(window, std::move(options), [&](const Draw& tick, const Draw& draw, const Draw& draw_assistant,
+                                            bool& assistant_open, bool&) {
         MSG event{};
         while (PeekMessageW(&event, nullptr, 0, 0, PM_REMOVE)) {
             if (event.message == WM_QUIT) return false;
             TranslateMessage(&event);
             DispatchMessageW(&event);
         }
+        tick();
         const bool main_hidden = !IsWindowVisible(window) || IsIconic(window);
         const bool has_secondary = ImGui::GetPlatformIO().Viewports.Size > 1;
         const bool main_occluded = !main_hidden && occluded && renderer.swap_chain->Present(0, DXGI_PRESENT_TEST) == DXGI_STATUS_OCCLUDED;
@@ -311,7 +280,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int show) {
             return 1;
         }
         taskbar_created = RegisterWindowMessageW(L"TaskbarCreated");
-        prepare_startup(args.options);
+        startup_options = args.options;
 
         ImGui_ImplWin32_EnableDpiAwareness();
         const auto monitor = MonitorFromPoint({0, 0}, MONITOR_DEFAULTTOPRIMARY);

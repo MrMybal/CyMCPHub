@@ -46,7 +46,7 @@ FetchContent_Declare(tomlplusplus GIT_REPOSITORY https://github.com/marzer/tomlp
     GIT_TAG 30172438cee64926dc41fdd9c11fb3ba5b2ba9de)
 FetchContent_MakeAvailable(CyUI CyMCPSDK tomlplusplus)
 
-add_library(hub_catalog STATIC src/catalog.cpp src/sdk_scan.cpp src/mcp_actions.cpp src/journal.cpp
+add_library(hub_catalog STATIC src/catalog.cpp src/sdk_scan.cpp src/mcp_actions.cpp src/journal.cpp src/app_settings.cpp
     src/hub_service.cpp src/resident_service.cpp src/skills.cpp src/platform_common.cpp src/updates.cpp)
 target_compile_definitions(hub_catalog PUBLIC CYMCP_HUB_VERSION="${PROJECT_VERSION}")
 target_link_libraries(hub_catalog PUBLIC CyMCP::MCP PRIVATE tomlplusplus::tomlplusplus)
@@ -62,12 +62,12 @@ target_link_libraries(CyMCPHubMcp PRIVATE hub_catalog)
 
 set(imgui_dir "${cyui_SOURCE_DIR}/third_party/imgui")
 set(branding_dir "${CMAKE_CURRENT_SOURCE_DIR}/assets/branding")
-add_executable(CyMCPHub WIN32 MACOSX_BUNDLE src/ui.cpp src/action_panel.cpp src/assistant_panel.cpp
+add_executable(CyMCPHub WIN32 MACOSX_BUNDLE src/ui.cpp src/ui_kit.cpp src/action_panel.cpp src/assistant_panel.cpp
     src/skill_panel.cpp src/update_panel.cpp)
-target_link_libraries(CyMCPHub PRIVATE hub_catalog CyUI::Core CyMCP::ChatUI)
+target_link_libraries(CyMCPHub PRIVATE hub_catalog CyUI::Core CyUI::DocumentViews CyMCP::ChatUI)
 if(WIN32)
     enable_language(RC)
-    target_sources(CyMCPHub PRIVATE src/ui_main.cpp src/app_icon.rc
+    target_sources(CyMCPHub PRIVATE src/ui_main.cpp src/autostart_windows.cpp src/app_icon.rc
         "${imgui_dir}/backends/imgui_impl_win32.cpp" "${imgui_dir}/backends/imgui_impl_dx11.cpp")
     target_include_directories(CyMCPHub PRIVATE "${imgui_dir}/backends" "${branding_dir}")
     set_source_files_properties(src/app_icon.rc PROPERTIES OBJECT_DEPENDS "${branding_dir}/cymcphub.ico")
@@ -162,6 +162,14 @@ if(BUILD_TESTING)
     target_link_libraries(CyMCPHubUpdateTest PRIVATE hub_catalog)
     target_compile_features(CyMCPHubUpdateTest PRIVATE cxx_std_20)
     add_test(NAME update_check COMMAND CyMCPHubUpdateTest)
+    add_executable(CyMCPHubSettingsTest tests/settings_check.cpp)
+    target_include_directories(CyMCPHubSettingsTest PRIVATE src)
+    target_link_libraries(CyMCPHubSettingsTest PRIVATE hub_catalog)
+    target_compile_features(CyMCPHubSettingsTest PRIVATE cxx_std_20)
+    if(WIN32)
+        target_compile_definitions(CyMCPHubSettingsTest PRIVATE UNICODE _UNICODE NOMINMAX WIN32_LEAN_AND_MEAN)
+    endif()
+    add_test(NAME settings_check COMMAND CyMCPHubSettingsTest)
     find_package(Python3 QUIET COMPONENTS Interpreter)
     if(Python3_Interpreter_FOUND)
         add_test(NAME http_compatibility COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/http_compatibility.py"

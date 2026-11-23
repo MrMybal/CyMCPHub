@@ -4,6 +4,7 @@
 #include "assistant_panel.hpp"
 #include "skills.hpp"
 #include "platform.hpp"
+#include "ui_kit.hpp"
 
 #include <cyui/Core.h>
 #include <algorithm>
@@ -176,25 +177,42 @@ void AssistantPanel::connect(const cymcp::DiscoveredConnection& provider, const 
 }
 
 void AssistantPanel::draw(const Options& options) {
+    namespace icon = cyui::icon;
+    using cyui::dp;
     if (!discovery_started_) discover();
-    {
-        std::lock_guard lock(context_->mutex);
-        const auto tab = context_->value.value("tab", std::string{});
-        const auto selection = context_->value.value("selection", std::string{});
-        const auto detail = context_->value.value("detailTab", std::string{});
-        auto label = tr(tab.c_str());
-        if (!detail.empty()) label += "  /  " + tr(detail.c_str());
-        if (!selection.empty()) label += "  ·  " + selection;
-        if (!tab.empty()) cyui::textDim("%s  %s", tr("Current tab").c_str(), label.c_str());
-    }
     const auto& state = chat_.state();
     const auto chosen = std::find_if(detected_.begin(), detected_.end(), [&](const auto& item) {
         return item.available() && item.provider_id == provider_id_;
     });
     const auto label = chosen == detected_.end() ? tr("Select a provider") : chosen->name;
+
     {
+        const cyui::ScopedFont title(cyui::boldFont(), 1.2f);
+        ImGui::TextUnformatted(tr("Assistant").c_str());
+    }
+    ImGui::SameLine(0, dp(10));
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + ImGui::GetFontSize() * 0.12f);
+    if (state.connected) cyui::badge(state.provider_id.c_str(), cyui::Tone::success);
+    {
+        std::lock_guard lock(context_->mutex);
+        const auto tab = context_->value.value("tab", std::string{});
+        const auto selection = context_->value.value("selection", std::string{});
+        const auto detail = context_->value.value("detailTab", std::string{});
+        auto context = tr(tab.c_str());
+        if (!detail.empty()) context += "  /  " + tr(detail.c_str());
+        if (!selection.empty()) context += "  ·  " + selection;
+        if (!tab.empty()) cyui::textFaint("%s  %s", tr("Current tab").c_str(), context.c_str());
+    }
+    cyui::space(4);
+
+    if (kit::begin_pane("##assistant-connection", ImVec2(0, 0), true, true)) {
         const cyui::ScopedDisabled busy(state.busy);
-        ImGui::SetNextItemWidth(cyui::dp(258));
+        const bool supports = !target_ || can_use_connector(provider_id_);
+        const auto connect_label = kit::with_icon(icon::connect, trLabel("Connect assistant"));
+        const auto detect_tip = tr("Detect providers");
+        const auto buttons = cyui::buttonWidth(connect_label.c_str()) + ImGui::GetFrameHeight() + dp(2) +
+                             ImGui::GetStyle().ItemSpacing.x * 2;
+        ImGui::SetNextItemWidth(std::max(dp(160), ImGui::GetContentRegionAvail().x - buttons));
         if (ImGui::BeginCombo("##assistant-provider", label.c_str())) {
             for (const auto& provider : detected_) {
                 if (!provider.available() || !can_use_connector(provider.provider_id)) continue;
@@ -204,33 +222,41 @@ void AssistantPanel::draw(const Options& options) {
             ImGui::EndCombo();
         }
         ImGui::SameLine();
-        const bool supports = !target_ || can_use_connector(provider_id_);
         {
             const cyui::ScopedDisabled unavailable(chosen == detected_.end() || !supports || discovering_.valid());
-            if (cyui::primaryButton(trLabel("Connect assistant").c_str())) connect(*chosen, options);
+            if (cyui::primaryButton(connect_label.c_str())) connect(*chosen, options);
         }
         ImGui::SameLine();
         {
             const cyui::ScopedDisabled discovering(discovering_.valid());
-            if (cyui::button(trLabel("Detect providers").c_str())) discover();
+            if (cyui::iconButton(cyui::iconsAvailable() ? icon::refresh : "R", detect_tip.c_str())) discover();
         }
         if (target_) {
             const auto& name = target_->server_name.empty() ? target_->name : target_->server_name;
-            cyui::textDim("%s  %s · %s", tr("Selected connector").c_str(), name.c_str(), tr(target_->source.c_str()).c_str());
+            ImGui::AlignTextToFramePadding();
+            cyui::textDim("%s", tr("Selected connector").c_str());
             ImGui::SameLine();
-            if (cyui::ghostButton(trLabel("Remove target").c_str())) target_.reset();
+            cyui::badge((name + "  ·  " + tr(target_->source.c_str())).c_str(), cyui::Tone::accent);
+            ImGui::SameLine();
+            if (cyui::ghostButton(kit::with_icon(icon::close, trLabel("Remove target")).c_str())) target_.reset();
+        }
+        if (discovering_.valid()) {
+            cyui::spinner("##discovering", ImGui::GetFontSize() * 0.32f);
+            ImGui::SameLine();
+            cyui::textDim("%s", tr("Looking for AI providers…").c_str());
+        } else if (chosen == detected_.end()) {
+            cyui::textDim("%s", tr("No AI provider detected").c_str());
         }
         if (!supports && !provider_id_.empty())
             cyui::callout(cyui::Tone::warning, tr("This provider cannot use the selected connector.").c_str());
+        if (!error_.empty()) cyui::callout(cyui::Tone::error, error_.c_str());
     }
-    if (discovering_.valid()) cyui::textDim("%s", tr("Looking for AI providers…").c_str());
-    else if (chosen == detected_.end()) cyui::textDim("%s", tr("No AI provider detected").c_str());
-    if (!error_.empty()) cyui::callout(cyui::Tone::error, error_.c_str());
+    kit::end_pane();
+    cyui::space(6);
     if (state.connected && (state.provider_id != provider_id_ || connected_target_ != (target_ ? target_->id : std::string{}))) {
         cyui::callout(cyui::Tone::info, tr("Connect to apply the selected provider or connector.").c_str());
         return;
     }
-    cyui::divider(3);
     panel_.draw("##assistant-chat");
 }
 } // namespace hub

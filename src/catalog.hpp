@@ -8,6 +8,7 @@
 namespace hub {
 namespace fs = std::filesystem;
 using cymcp::Json;
+class Journal;
 
 enum class Status { verified, process_seen, configured, authentication, unverified, disabled };
 const char* status_key(Status status);
@@ -28,6 +29,7 @@ struct Server {
 struct Snapshot {
     std::vector<Server> servers;
     std::vector<fs::path> unreadable_sources;
+    std::size_t tcp_candidates = 0;
     bool processes_available = true;
     bool ports_available = true;
 };
@@ -45,7 +47,7 @@ struct Arguments {
 };
 
 Arguments parse_arguments(const std::vector<std::string>& arguments);
-Snapshot scan(const Options& options, const cymcp::Cancellation& cancellation = {});
+Snapshot scan(const Options& options, const cymcp::Cancellation& cancellation = {}, Journal* journal = nullptr);
 void set_note(const std::string& id, const std::string& note);
 Json read_notes();
 bool matches(const Server& server, std::string_view query);

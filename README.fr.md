@@ -49,6 +49,8 @@ L’installateur Windows s’installe pour le compte courant et crée un raccour
 
 ## Connecter un client IA
 
+La page **Réglages**, dans la barre latérale, regroupe les sources d’inventaire, l’intervalle d’actualisation des MCP et la configuration à copier dans un client IA. Par défaut, l’inventaire se relance toutes les minutes, y compris quand la fenêtre est masquée dans la zone de notification. Le service HTTP local propose un port configurable et un mode d’accès avec ou sans jeton. L’option **Démarrer avec l’application** du service et **Démarrer avec Windows** sont deux réglages indépendants.
+
 1. Dans **Sources**, choisissez le projet et ajoutez sa configuration MCP si nécessaire.
 2. Ouvrez **Connexion IA**. Choisissez **stdio** pour laisser le client lancer le serveur MCP du Hub, ou activez **Service MCP (HTTP)** pour utiliser l’application de bureau en cours d’exécution.
 3. Copiez la configuration vers votre client. Appelez `mcp_list` pour retrouver l’identifiant du connecteur, puis `mcp_tools` avec cet identifiant pour consulter les schémas. Utilisez `mcp_catalog` avec `format: "markdown"` pour obtenir une synthèse des applications.

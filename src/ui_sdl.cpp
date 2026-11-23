@@ -96,6 +96,7 @@ struct Screen {
 
 struct Tray {
     std::unique_ptr<SDL_Tray, decltype(&SDL_DestroyTray)> icon{nullptr, SDL_DestroyTray};
+    SDL_TrayEntry* login_entry = nullptr;
     SDL_Window* window;
     const hub::Options& options;
 
@@ -113,7 +114,9 @@ struct Tray {
         if (!menu) { icon.reset(); return; }
         const auto fr = hub::french_locale();
         auto insert = [&](const char* label, SDL_TrayEntryFlags flags, SDL_TrayCallback callback) {
-            if (auto* item = SDL_InsertTrayEntryAt(menu, -1, label, flags)) SDL_SetTrayEntryCallback(item, callback, this);
+            auto* item = SDL_InsertTrayEntryAt(menu, -1, label, flags);
+            if (item) SDL_SetTrayEntryCallback(item, callback, this);
+            return item;
         };
         insert(fr ? "Ouvrir CyMCPHub" : "Open CyMCPHub", SDL_TRAYENTRY_BUTTON, [](void* data, SDL_TrayEntry*) {
             auto* self = static_cast<Tray*>(data);
@@ -128,7 +131,7 @@ struct Tray {
         });
         bool login = false;
         try { login = hub::autostart_enabled(); } catch (const std::exception&) {}
-        insert(fr ? "Démarrer à l’ouverture de session" : "Start at login",
+        login_entry = insert(fr ? "Démarrer à l’ouverture de session" : "Start at login",
                SDL_TRAYENTRY_CHECKBOX | (login ? SDL_TRAYENTRY_CHECKED : 0), [](void* data, SDL_TrayEntry* item) {
             auto* self = static_cast<Tray*>(data);
             const auto checked = SDL_GetTrayEntryChecked(item);
@@ -159,8 +162,8 @@ void run(hub::Arguments args) {
     const Tray tray(main.window.get(), args.options, logo.get());
     if (!args.tray || !tray.icon) SDL_ShowWindow(main.window.get());
 
-    hub::draw_hub(main.window.get(), args.options, [&](const hub::Draw& draw_main, const hub::Draw& draw_assistant,
-                                                     bool& assistant_open, bool& focus) {
+    hub::draw_hub(main.window.get(), args.options, [&](const hub::Draw& tick, const hub::Draw& draw_main,
+                                                     const hub::Draw& draw_assistant, bool& assistant_open, bool& focus) {
         SDL_Event event{};
         const auto wait = main.visible() || (assistant && assistant_open) ? 0 : 200;
         if (SDL_WaitEventTimeout(&event, wait)) do {
@@ -180,7 +183,16 @@ void run(hub::Arguments args) {
         } while (SDL_PollEvent(&event));
 
         // Keep the screen context current for the shared catalogue and the assistant controller.
+        ImGui::SetCurrentContext(main.context);
+        tick();
         if (main.visible() || hub::tray_assistant_requested || assistant_open) main.render(draw_main);
+        if (hub::tray_login_changed) {
+            hub::tray_login_changed = false;
+            if (tray.login_entry) {
+                try { SDL_SetTrayEntryChecked(tray.login_entry, hub::autostart_enabled()); }
+                catch (const std::exception&) {}
+            }
+        }
         if (assistant_open) {
             if (!assistant) assistant = std::make_unique<Screen>("Assistant · CyMCPHub", 700, 620, 465, 380, logo.get());
             if (focus) {

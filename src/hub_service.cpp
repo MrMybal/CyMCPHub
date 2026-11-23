@@ -48,11 +48,16 @@ struct HubState {
     void refresh(const cymcp::Cancellation& cancellation, bool force = false) {
         cancellation.check();
         if (force || updated == cymcp::Clock::time_point::min() || cymcp::Clock::now() - updated > freshness) {
-            snapshot = scan(options, cancellation);
+            snapshot = scan(options, cancellation, journal.get());
             updated = cymcp::Clock::now();
         }
-        const auto notes = read_notes();
-        for (auto& server : snapshot.servers) server.note = notes.value(server.id, std::string());
+        Json notes = Json::object();
+        try { notes = read_notes(); }
+        catch (const std::exception& error) { if (journal) journal->add("CyMCPHub", "annotations/read", "Error", error.what()); }
+        for (auto& server : snapshot.servers) {
+            const auto found = notes.find(server.id);
+            server.note = found != notes.end() && found->is_string() ? found->get<std::string>() : std::string{};
+        }
     }
 
     Server& find(const std::string& id) {
@@ -65,7 +70,8 @@ struct HubState {
     std::shared_ptr<McpActions> connection(const std::string& id, const cymcp::Cancellation& cancellation) {
         std::lock_guard lock(mutex);
         if (const auto found = connections.find(id); found != connections.end()) return found->second;
-        refresh(cancellation);
+        if (std::none_of(snapshot.servers.begin(), snapshot.servers.end(), [&](const Server& server) { return server.id == id; }))
+            refresh(cancellation);
         return connections.emplace(id, std::make_shared<McpActions>(find(id), options, journal)).first->second;
     }
 };
